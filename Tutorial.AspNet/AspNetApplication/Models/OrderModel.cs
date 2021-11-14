@@ -16,14 +16,20 @@ namespace AspNetApplication.Models
         }
         int status_;
         int id_;
+        Tuple<int, int> route_;
         Dictionary<ProductsModel, int> products_;
         
         public OrderModel(int id, int status)
+        {
+
+        }
 
         public void setStatus(int new_status)
         {
             status_ = new_status;
         }
+
+        Tuple
 
     }
 }
