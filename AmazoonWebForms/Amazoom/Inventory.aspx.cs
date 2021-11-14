@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Amazoom
 {
-    public partial class Contact : Page
+    public partial class Inventory : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {

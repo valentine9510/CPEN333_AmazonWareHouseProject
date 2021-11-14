@@ -11,7 +11,7 @@ namespace Amazoom
 {
 
 
-    public partial class Contact
+    public partial class Inventory
     {
     }
 }
