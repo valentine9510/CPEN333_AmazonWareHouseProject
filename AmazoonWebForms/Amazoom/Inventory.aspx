@@ -1,8 +1,8 @@
-﻿<%@ Page Title="Contact" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Inventory.aspx.cs" Inherits="Amazoom.Contact" %>
+﻿<%@ Page Title="Inventory" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Inventory.aspx.cs" Inherits="Amazoom.Contact" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <h1 class="text-center"><%: Title %><strong>Inventory</strong></h1>
-    <div style="padding:20px">
+    <h1 class="text-center"><%: Title %></h1>
+    <div style="padding:20px";"background-image: url('https://images.pexels.com/photos/933054/pexels-photo-933054.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260');" >
         <h2>Input new inventory</h2>
         <table style="width: 980px">
             <tr>
