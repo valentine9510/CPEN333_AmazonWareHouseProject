@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31829.152
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazoomWebServer", "AmazoomWebServer\AmazoomWebServer.csproj", "{F0566250-4AEC-4DBB-8D9C-D16B7BBEE30E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarehouseComputer", "WarehouseComputer\WarehouseComputer.csproj", "{BE434EB2-6401-43C7-9F20-58CABA2461D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0566250-4AEC-4DBB-8D9C-D16B7BBEE30E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0566250-4AEC-4DBB-8D9C-D16B7BBEE30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0566250-4AEC-4DBB-8D9C-D16B7BBEE30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0566250-4AEC-4DBB-8D9C-D16B7BBEE30E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE434EB2-6401-43C7-9F20-58CABA2461D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE434EB2-6401-43C7-9F20-58CABA2461D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE434EB2-6401-43C7-9F20-58CABA2461D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE434EB2-6401-43C7-9F20-58CABA2461D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9563D7A7-C163-42CF-AE4C-5F6C39CA47F3}
+	EndGlobalSection
+EndGlobal
