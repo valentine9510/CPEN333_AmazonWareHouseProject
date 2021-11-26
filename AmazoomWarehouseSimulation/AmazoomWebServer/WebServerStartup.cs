@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace AmazoomWebServer
 {
-    public class Startup
+    public class WebServerStartup
     {
-        public Startup(IConfiguration configuration)
+        public WebServerStartup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
