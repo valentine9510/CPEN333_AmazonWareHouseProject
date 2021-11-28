@@ -7,19 +7,19 @@ namespace AmazoomClassLibrary
     [Serializable]
     public class Order
     {
-        public int OrderID;
+        public int orderID;
 
-        public List<Product> Products;
+        public List<Product> products;
 
         public Order(int inputOrderID)
         {
-            OrderID = inputOrderID;
-            Products = new List<Product>();
+            orderID = inputOrderID;
+            products = new List<Product>();
         }
 
         public void AddProduct(Product inputProduct)
         {
-            this.Products.Add(inputProduct);
+            this.products.Add(inputProduct);
         }
     }
 }

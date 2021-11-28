@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using WarehouseComputer.Classes;
+using AmazoomClassLibrary;
 
 namespace WarehouseComputer
 {
@@ -11,11 +12,30 @@ namespace WarehouseComputer
     class Program
     {
         public static WarehouseMap map;
+        private static Queue<Robot> waitingRobots;
+        private static Queue<Order> waitingOrders;
 
         static void Main(string[] args)
         {
             map = new WarehouseMap(15, 5);
+            waitingRobots = new Queue<Robot>();
+            waitingOrders = new Queue<Order>();
 
+            testFindRoute();
+
+            for (int i = 0; i < 2; i++)
+            {
+                Robot r = new Robot(i, 10, 0);
+                waitingRobots.Enqueue(r);
+                Thread t = new Thread(() => r.Execute());
+                t.Start(); //should we join threads ?
+            }
+
+            testRobotsOrder();
+        }
+
+        private static void testFindRoute()
+        {
             // Route testing
             List<Location> locations = new List<Location>();
             locations.Add(new Location(4, 2, 0, 0));
@@ -24,7 +44,7 @@ namespace WarehouseComputer
             locations.Add(new Location(8, 3, 0, 0));
             locations.Add(new Location(12, 2, 0, 0));
 
-            Robot robot = new Robot(1, 1, 1, new Tuple<int, int>(4, 4));
+            Robot robot = new Robot(1, 10, 0);
             List<Tuple<int, int>> route = FindRoute(locations, robot);
             int count = 0;
             foreach (var cell in route)
@@ -33,36 +53,102 @@ namespace WarehouseComputer
             }
         }
 
+        private static void testRobotsOrder()
+        {
+            Order order1 = new Order(0);
+            Product p = new Product("banana", 1, new Location(4, 2, 0, 2), 1);
+            order1.AddProduct(p);
+            p = new Product("ananas", 1, new Location(2, 3, 1, 1), 1);
+            order1.AddProduct(p);
+            p = new Product("orange", 1, new Location(8, 3, 0, 1), 1);
+            order1.AddProduct(p);
+            p = new Product("lemon", 1, new Location(12, 2, 1, 2), 1);
+            order1.AddProduct(p);
+
+            Order order2 = new Order(1);
+            p = new Product("apple", 1, new Location(6, 3, 1, 1), 1);
+            order2.AddProduct(p);
+            p = new Product("strawberry", 1, new Location(4, 3, 0, 1), 1);
+            order2.AddProduct(p);
+            p = new Product("raspberry", 1, new Location(4, 2, 1, 2), 1);
+            order2.AddProduct(p);
+
+            Order order3 = new Order(2);
+            p = new Product("pear", 1, new Location(2, 3, 0, 2), 1);
+            order3.AddProduct(p);
+            p = new Product("blueberry", 1, new Location(14, 3, 0, 1), 1);
+            order3.AddProduct(p);
+            p = new Product("peach", 1, new Location(10, 2, 1, 2), 1);
+            order3.AddProduct(p);
+
+            SendOrder(order1);
+            SendOrder(order2);
+            SendOrder(order3);
+        }
+
+        public static void SendOrder(Order newOrder)
+        {
+            if(waitingRobots.Count == 0)
+            {
+                Console.WriteLine("Order {0} waiting!", newOrder.orderID);
+                waitingOrders.Enqueue(newOrder);
+            }
+            else
+            {
+                Robot robot = waitingRobots.Dequeue();
+                SendOrderToRobot(newOrder, robot);
+            }
+        }
+
+        private static void SendOrderToRobot(Order order, Robot robot)
+        {
+            List<Location> locations = new List<Location>();
+            foreach (var product in order.products)
+            {
+                locations.Add(product.location);
+            }
+
+            List<Tuple<int, int>> route = FindRoute(locations, robot);
+            robot.SetRoute(route);
+            robot.currOrder = order;
+            robot.ewh.Set();
+        }
+
+
+        public static void OrderDone(Order order, Robot robot)
+        {
+            Console.WriteLine("Order {0} is in a delivery truck !", order.orderID);
+            if(waitingOrders.Count == 0)
+            {
+                waitingRobots.Enqueue(robot);
+            }
+            else
+            {
+                Order nextOrder = waitingOrders.Dequeue();
+                SendOrderToRobot(nextOrder, robot);
+            }
+        }
+
+
         private static List<Tuple<int, int>> FindRoute(List<Location> locations, Robot robot)
         {
             List<Tuple<int, int>> route = new List<Tuple<int, int>>();
             locations.Sort();
-            Console.WriteLine("locations sorted :");
-            foreach (var l in locations)
-            {
-                Console.WriteLine("{0}, {1}", l.x, l.y);
-            }
-            Tuple<int, int> current = robot.GetLocation();
 
             /**
              * Step 1 : Get to A1
-             * Assumption : Robots end their route at bottom row
+             * Assumption : Robots are waiting in a hangar
              */
+
             //get to A-up-5
-            if (current.Item1 > 1)
-            {
-                for (int i = current.Item1; i > 1; i--)
-                {
-                    route.Add(new Tuple<int, int>(i - 1, current.Item2));
-                }
-            }
+            route.Add(new Tuple<int, int>(0, map.nRow - 1));
+            route.Add(new Tuple<int, int>(1, map.nRow - 1));
 
             //move on A up
-            for (int i = current.Item2; i > 0; i--)
+            for (int i = map.nRow; i > 0; i--)
             {
                 route.Add(new Tuple<int, int>(1, i - 1));
             }
-            Console.WriteLine("current location is {0}, {1}", 1, 0);
 
 
             /**
@@ -83,11 +169,9 @@ namespace WarehouseComputer
                         if (currRow != 0)
                         {
                             route.Add(new Tuple<int, int>(++currCol, currRow)); //move on up aisle
-                            Console.WriteLine("Adding cell {0}, {1}", currCol, currRow);
                             for (int i = currRow; i > 0; i--)
                             {
                                 route.Add(new Tuple<int, int>(currCol, i - 1)); //get to row1
-                                Console.WriteLine("Adding cell {0}, {1}", currCol, i - 1);
                             }
                             currRow = 0;
                         }
@@ -96,7 +180,6 @@ namespace WarehouseComputer
                         for (int i = currCol; i < loc.x; i++)
                         {
                             route.Add(new Tuple<int, int>(i + 1, currRow));
-                            Console.WriteLine("Adding cell {0}, {1}", i + 1, currRow);
                         }
                         currCol = loc.x;
                     }
@@ -105,11 +188,9 @@ namespace WarehouseComputer
                     for (int i = currRow; i < loc.y; i++)
                     {
                         route.Add(new Tuple<int, int>(currCol, i + 1));
-                        Console.WriteLine("Adding cell {0}, {1}", currCol, i + 1);
                     }
                     currRow = loc.y;
-
-                    Console.WriteLine("current location is {0}, {1}", currCol, currRow);
+                    
                 }
             }
 
@@ -144,6 +225,17 @@ namespace WarehouseComputer
             {
                 route.Add(new Tuple<int, int>(i - 1, currRow));
             }
+            currCol = 5 * 2 - 1;
+
+            /**
+             * Step 4 : Go back to hangar
+             */
+            for (int i = currCol; i > 1; i--)
+            {
+                route.Add(new Tuple<int, int>(i - 1, currRow));
+            }
+
+
             return route;
         }
     }

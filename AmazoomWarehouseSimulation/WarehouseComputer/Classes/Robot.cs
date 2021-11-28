@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using AmazoomClassLibrary;
+using System.Threading;
 
 namespace WarehouseComputer.Classes
 {
@@ -8,18 +10,21 @@ namespace WarehouseComputer.Classes
         private int id;
         private int maxWeight;
         private int currWeight;
-        private Tuple<int, int> location;
+        private Cell currCell;
         private List<Tuple<int, int>> route;
-        //private Order currOrder;
-        //WarehouseMap as global variable --> defined in WarehouseComputer (?)
+        public Order currOrder;
+        public EventWaitHandle ewh;
 
-        public Robot(int id, int maxWeight, int currWeight, Tuple<int, int> location)
+        public Robot(int id, int maxWeight, int currWeight)
         {
             this.id = id;
             this.maxWeight = maxWeight;
             this.currWeight = currWeight;
-            this.location = location;
+
+            this.currCell = null;
+            this.currOrder = null;
             this.route = new List<Tuple<int, int>>();
+            ewh = new EventWaitHandle(false, EventResetMode.ManualReset);
         }
 
         public void SetRoute(List<Tuple<int, int>> route)
@@ -27,32 +32,86 @@ namespace WarehouseComputer.Classes
             this.route = route;
         }
 
-        private void ExecRoute()
+        public void GetOrder()
         {
-            Console.WriteLine("Robot {0} is starting a new route !", this.id);
-            foreach (var cell in this.route)
+            Console.Write("Robot {0} starting route for : ", id);
+            foreach (var p in currOrder.products)
             {
-                /**
-                 * Get lock of cell, check if cell available
-                 * If it's available go there (+ signal cv of prev cell), else sleep on cv
-                 * Release lock
-                 */
-                this.location = cell;
-                //if item at that location --> call FetchItem()
-                //ideally: sort items in Order per location, so that location check doesn't take too much time
+                Console.Write("{0} ", p.name);
+            }
+            Console.Write(".\n");
+
+            ExecRoute();
+        }
+
+        public void Execute()
+        {
+
+            while (true)
+            {
+                if(currOrder == null)
+                {
+                    ewh.WaitOne();
+                }
+                else
+                {
+                    GetOrder();
+                }
             }
         }
 
-        public Tuple<int, int> GetLocation()
+        private void ExecRoute()
         {
-            return this.location;
+
+            Console.WriteLine("Robot {0} is starting a new route !", this.id);
+            foreach (var nextLocation in this.route)
+            {
+                Cell nextCell = Program.map.GetCell(nextLocation.Item2, nextLocation.Item1); //Find route impl. with x-y, getCoord with row-col
+
+                Monitor.Enter(nextCell);
+
+                if(currCell != null)
+                {
+                    Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
+                    Monitor.Exit(this.currCell);
+                }
+                this.currCell = nextCell;
+
+                //ideally: sort items in Order per location, so that location check doesn't take too much time
+                foreach (var product in currOrder.products)
+                {
+                    if(product.location.x == this.currCell.x &&
+                        product.location.y == this.currCell.y)
+                    {
+                        FetchItem(product);
+                    }
+                }
+
+                Thread.Sleep(500); //simulates time needed by robot to move to next cell
+            }
+
+            this.currWeight = 0;
+            Monitor.Exit(this.currCell); //gets to the hangar --> frees last cell
+            this.currCell = null;
+            Console.WriteLine("Robot {0} joined the hangar.", id);
+
+            Order orderDone = this.currOrder;
+            this.currOrder = null;
+            Program.OrderDone(orderDone, this);
         }
 
-        private void FetchItem()
+        public Cell GetCurrCell()
+        {
+            return this.currCell;
+        }
+
+        private void FetchItem(Product p)
         {
             //update weight
-            //spend some time on that (to simulate operation)
-            Console.WriteLine("Item fetched !");
+            this.currWeight += p.weight;
+            Console.WriteLine("Fetching {0}...", p.name);
+            Thread.Sleep(1500);
+            Console.WriteLine("{0} fetched !", p.name);
         }
     }
 }

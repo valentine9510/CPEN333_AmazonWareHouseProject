@@ -6,29 +6,26 @@ namespace WarehouseComputer.Classes
     public class WarehouseMap
     {
         public int nCol, nRow;
-        public int[] coordinates; //for each coordinate, 0 if free, 1 if occupied
-        //public ConditionVariable[] locks;
+        public Cell[] cells; //cells used for locking access
 
         public WarehouseMap(int nCol, int nRow)
         {
             this.nCol = nCol;
             this.nRow = nRow;
 
-            this.coordinates = new int[nCol * nRow];
+            this.cells = new Cell[nCol * nRow];
             for (int i = 0; i < nRow; i++)
             {
                 for (int j = 0; j < nCol; j++)
                 {
-                    this.coordinates[i * nRow + j] = 0;
-                    //init lock/cv
+                    this.cells[i * nCol + j] = new Cell(j, i);
                 }
             }
         }
 
-        public int GetCoord(int row, int col)
+        public Cell GetCell(int row, int col)
         {
-            //get lock from outside, check value, release lock
-            return row * nCol + col;
+            return cells[row * nCol + col];
         }
     }
 }
