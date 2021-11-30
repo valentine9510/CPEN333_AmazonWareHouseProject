@@ -12,12 +12,13 @@ namespace AmazoomWebServer.Controllers
     {
         public IActionResult Index(string Product, int Number)
         {
-            Console.WriteLine("Product:{0}, Number:{1}", Product, Number);
-            Product orderedProduct = new Product() { name = Product, NumOfProduct = Number };
-            Order sale = new Order(1);
-            sale.AddProduct(orderedProduct);
-            MemoryMappedFile mmf = MemoryMappedFile.OpenExisting("SalesFile", MemoryMappedFileRights.Write);
-            AmazoomProcess.WriteMMF(sale, mmf);
+            Product OrderedProduct = new Product() { name = Product, NumOfProduct = Number };
+            Order Sale = new Order() { OrderID = Globals.OrderIDCounter };
+            Globals.OrderIDCounter++;
+            Sale.AddProduct(OrderedProduct);
+            Globals.AddToQueue(Sale);
+
+            
             return Content(string.Format("Product:{0}, Number:{1}", Product, Number));
         }
     }

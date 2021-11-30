@@ -11,9 +11,8 @@ namespace AmazoomClassLibrary
 
         public List<Product> Products;
 
-        public Order(int inputOrderID)
+        public Order()
         {
-            OrderID = inputOrderID;
             Products = new List<Product>();
         }
 

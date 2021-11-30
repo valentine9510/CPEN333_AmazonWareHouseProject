@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using AmazoomWebServer.Models;
 using System.Runtime.Serialization.Formatters.Binary;
 using AmazoomClassLibrary;
+using System.IO.Pipes;
 
 namespace AmazoomWebServer
 {
@@ -19,10 +20,14 @@ namespace AmazoomWebServer
     {
         public static void Main(string[] args)
         {
-            //MemoryMappedFile mmf = MemoryMappedFile.OpenExisting("SalesFile", MemoryMappedFileRights.Write);
-            //Order Sale1 = new Order();
-            //Sale1.OrderID = 1;
-            //AmazoomProcess.WriteMMF(Sale1, mmf);
+            string PipeHandle = args[0];
+            Globals.OrderQueue = new Queue<Order>();
+            ServerCommThread ThreadInstance = new ServerCommThread(PipeHandle);
+            Thread SendOrders = new Thread(new ThreadStart(ThreadInstance.Execute));
+            SendOrders.Start();
+            
+
+            
             CreateHostBuilder(args).Build().Run();
             
         }
