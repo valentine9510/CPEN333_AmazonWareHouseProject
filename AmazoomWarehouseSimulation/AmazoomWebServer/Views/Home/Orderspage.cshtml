@@ -12,59 +12,69 @@
 </head>
 
 <body>
-    <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif;"><strong>Inventory</strong></p>
+    <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif; padding-bottom:0.3em"><strong>Inventory</strong></p>
     <link href="~/css/table.css" rel="stylesheet" />
+    <link href="~/css/cards.css" rel="stylesheet" />
 
-
-    <div class="row" style="text-align:center; width: 750px; margin: auto">
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:black; font: normal 2em 'Playfair Display SC', serif;">
-                    Current Order
-                </button>
-                <div class="dropdown-items" style="background-color:lightgrey">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+    <div class="container_card">
+        <div class="card; dropdown_custom" style="background-color:lightgray">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Current Order
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightgrey">
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
+
             </div>
         </div>
 
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:darkred; font: normal 2em 'Playfair Display SC', serif;">
-                    Orders in progress
-                </button>
-                <div class="dropdown-items" style="background-color:lightgoldenrodyellow">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
-
+        <div class="card; dropdown_custom" style="background-color:lightsalmon">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Orders in Progress
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightpink">
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
             </div>
         </div>
 
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:green; font: normal 2em 'Playfair Display SC', serif;">
-                    Completed Orders
-                </button>
-                <div class="dropdown-items">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+        <div class="card; dropdown_custom" style="background-color:lightgreen">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Past Orders
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightgreen">
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                        <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
             </div>
         </div>
+
     </div>
 
-
-
-    <table id="inventoryTable">
+    <table id="inventoryTable" style="box-shadow: 0 1px 2px rgba(0,0,0,0.5);">
         <thead>
             <tr>
                 <th>Product</th>
-                <th>Weight</th>
                 <th>Quantity</th>
                 <th>Add to order</th>
             </tr>
@@ -74,7 +84,6 @@
             {
                 <tr>
                     <td data-column="Product">@item.name</td>
-                    <td data-column="Weight">@item.weight</td>
                     <td data-column="Quantity Available">@item.numOfProduct</td>
                     <td data-column="Add to order">
                         <div>
