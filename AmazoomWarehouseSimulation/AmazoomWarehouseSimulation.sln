@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmazoomWebServer", "Amazoom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmazoomClassLibrary", "AmazoomClassLibrary\AmazoomClassLibrary.csproj", "{093509D0-D0E6-42D8-B744-E1C35CE36DDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarehouseComputer", "WarehouseComputer\WarehouseComputer.csproj", "{6A1A2140-B7A5-40C0-B1F4-B013BD5B68B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarehouseComputer", "WarehouseComputer\WarehouseComputer.csproj", "{6A1A2140-B7A5-40C0-B1F4-B013BD5B68B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB3E568B-C85F-4FFE-AB20-C5C67312D1D1}"
+	ProjectSection(SolutionItems) = preProject
+		WebServerDatabase.json = WebServerDatabase.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

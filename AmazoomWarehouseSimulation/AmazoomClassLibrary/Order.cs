@@ -16,8 +16,7 @@ namespace AmazoomClassLibrary
         {
             // Get better idea of what statuses we should have
             NEW_ORDER,
-            PLACED,
-            READY,
+            ORDER_IN_TRANSIT,
             DELIVERED
         }
 
@@ -45,14 +44,14 @@ namespace AmazoomClassLibrary
 
         public void RemoveProduct(string name)
         {
-            // TO DO MAYBE: Can implement this function where, based on the given name
+            // TO DO MAYBE: Can implement this function here, based on the given name
             // check if the product is in the products list and remove if there or print a
             // message if not there.
         }
 
-        public void setStatus(Status new_status)
+        public void setStatus(Status inputstatus)
         {
-            status_ = new_status;
+            status_ = inputstatus;
         }
     }
 }

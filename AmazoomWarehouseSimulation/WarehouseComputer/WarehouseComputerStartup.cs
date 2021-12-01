@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO.MemoryMappedFiles;
+using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading;
@@ -18,12 +18,13 @@ namespace WarehouseComputer
         {
             AmazoomWebServerProcess = new Process();
             AmazoomWebServerProcess.StartInfo.UseShellExecute = false;
-            AmazoomWebServerProcess.StartInfo.FileName = "C:/Users/karth/Desktop/CPEN333_AmazonWareHouseProject/AmazoomWarehouseSimulation/AmazoomWebServer/bin/Debug/netcoreapp3.1/AmazoomWebServer.exe";
+            string startupPath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            string fullPath = Path.Combine(startupPath, "AmazoomWebServer/bin/Debug/netcoreapp3.1/AmazoomWebServer.exe");
+            AmazoomWebServerProcess.StartInfo.FileName = fullPath;
             AmazoomWebServerProcess.StartInfo.CreateNoWindow = false;
-            
+
             WarehouseComputerPipe = new AnonymousPipeServerStream(PipeDirection.In, System.IO.HandleInheritability.Inheritable);
             AmazoomWebServerProcess.StartInfo.Arguments = WarehouseComputerPipe.GetClientHandleAsString();
-            //Console.WriteLine(AmazoomWebServerProcess.StartInfo.Arguments);
             AmazoomWebServerProcess.Start();
             Console.WriteLine("[WH COMPUTER] Web Server process started \n");
             WarehouseComputerPipe.DisposeLocalCopyOfClientHandle();
