@@ -1,6 +1,8 @@
 ﻿using System;
-namespace WarehouseComputer.Classes
+
+namespace AmazoomClassLibrary
 {
+    [Serializable]
     public class Location : IComparable
     {
         public int x, y, leftOrRight, shelf;

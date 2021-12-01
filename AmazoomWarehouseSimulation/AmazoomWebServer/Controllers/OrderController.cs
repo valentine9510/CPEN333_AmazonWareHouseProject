@@ -12,7 +12,7 @@ namespace AmazoomWebServer.Controllers
     {
         public IActionResult Index(string Product, int Number)
         {
-            Product OrderedProduct = new Product() { name = Product, NumOfProduct = Number };
+            Product OrderedProduct = new Product(Product, Number);
             Order Sale = new Order() { OrderID = Globals.OrderIDCounter };
             Globals.OrderIDCounter++;
             Sale.AddProduct(OrderedProduct);

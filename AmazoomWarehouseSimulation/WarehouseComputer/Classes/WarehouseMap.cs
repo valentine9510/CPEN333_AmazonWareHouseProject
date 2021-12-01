@@ -1,34 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using AmazoomClassLibrary;
 
 namespace WarehouseComputer.Classes
 {
     public class WarehouseMap
     {
         public int nCol, nRow;
-        public int[] coordinates; //for each coordinate, 0 if free, 1 if occupied
-        //public ConditionVariable[] locks;
+        public Cell[] cells; //cells used for locking access
+        public List<Product> Inventory;
 
         public WarehouseMap(int nCol, int nRow)
         {
             this.nCol = nCol;
             this.nRow = nRow;
 
-            this.coordinates = new int[nCol * nRow];
+            this.cells = new Cell[nCol * nRow];
             for (int i = 0; i < nRow; i++)
             {
                 for (int j = 0; j < nCol; j++)
                 {
-                    this.coordinates[i * nRow + j] = 0;
-                    //init lock/cv
+                    this.cells[i * nCol + j] = new Cell(j, i);
                 }
             }
+            Inventory = new List<Product>();
+            Product Banana = new Product("banana", 1, new Location(4, 2, 0, 2), 1);
+            Inventory.Add(Banana);
+            Product Apple = new Product("ananas", 1, new Location(2, 3, 1, 1), 1);
+            Inventory.Add(Apple);
+            Product Orange = new Product("orange", 1, new Location(8, 3, 0, 1), 1);
+            Inventory.Add(Orange);
+            Product Lemon = new Product("lemon", 1, new Location(12, 2, 1, 2), 1);
+            Inventory.Add(Lemon);
+
         }
 
-        public int GetCoord(int row, int col)
+        public Cell GetCell(int row, int col)
         {
-            //get lock from outside, check value, release lock
-            return row * nCol + col;
+            return cells[row * nCol + col];
         }
     }
 }

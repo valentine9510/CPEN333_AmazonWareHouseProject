@@ -9,7 +9,6 @@ using System.IO;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 
 namespace WarehouseComputer
 {
@@ -100,7 +99,7 @@ namespace WarehouseComputer
         {
             if(waitingRobots.Count == 0)
             {
-                Console.WriteLine("Order {0} waiting!", newOrder.orderID);
+                Console.WriteLine("Order {0} waiting!", newOrder.OrderID);
                 waitingOrders.Enqueue(newOrder);
             }
             else
@@ -113,9 +112,9 @@ namespace WarehouseComputer
         private static void SendOrderToRobot(Order order, Robot robot)
         {
             List<Location> locations = new List<Location>();
-            foreach (var product in order.products)
+            foreach (var product in order.Products)
             {
-                locations.Add(product.location);
+                locations.Add(product.Location);
             }
 
             List<Tuple<int, int>> route = FindRoute(locations, robot);
@@ -127,7 +126,7 @@ namespace WarehouseComputer
 
         public static void OrderDone(Order order, Robot robot)
         {
-            Console.WriteLine("Order {0} is in a delivery truck !", order.orderID);
+            Console.WriteLine("Order {0} is in a delivery truck !", order.OrderID);
             if(waitingOrders.Count == 0)
             {
                 waitingRobots.Enqueue(robot);

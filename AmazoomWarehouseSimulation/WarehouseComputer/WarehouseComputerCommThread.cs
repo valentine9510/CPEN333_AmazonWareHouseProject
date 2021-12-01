@@ -19,7 +19,7 @@ namespace WarehouseComputer
                 Order RecievedOrder = new Order();
                 RecievedOrder = StreamReader.Deserialize(Pipe) as Order;
                 OrderQueue.Enqueue(RecievedOrder);
-                Console.WriteLine("[WH COMPUTER] OrderId:{0}, Product:{1}, Num:{2}", RecievedOrder.OrderID, RecievedOrder.Products[0].name, RecievedOrder.Products[0].NumOfProduct);
+                Console.WriteLine("[WH COMPUTER] OrderId:{0}, Product:{1}, Num:{2}", RecievedOrder.OrderID, RecievedOrder.Products[0].ProductName, RecievedOrder.Products[0].NumOfProduct);
             }
         }
     }

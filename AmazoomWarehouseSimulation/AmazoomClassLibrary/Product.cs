@@ -5,9 +5,29 @@ namespace AmazoomClassLibrary
     [Serializable]
     public class Product
     {
-        public string name { get; set; }
 
-        public int NumOfProduct { get; set; }
+        public string ProductName;
 
+        public int NumOfProduct;
+
+        public double Weight { get; set; }
+
+        public Location Location { get; set; }
+
+        public Product() { }
+
+        public Product(string name, int num)
+        {
+            this.ProductName = name;
+            this.NumOfProduct = num;
+        }
+
+        public Product(string name, int num, Location loc, double weight)
+        {
+            this.ProductName = name;
+            this.NumOfProduct = num;
+            this.Location = loc;
+            this.Weight = weight;
+        }
     }
 }
