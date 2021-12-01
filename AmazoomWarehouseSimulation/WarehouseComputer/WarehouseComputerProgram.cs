@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using WarehouseComputer.Classes;
 using AmazoomClassLibrary;
@@ -18,6 +18,7 @@ namespace WarehouseComputer
         public static WarehouseMap map;
         private static Queue<Robot> waitingRobots;
         private static Queue<Order> waitingOrders;
+        private static List<Product> allProducts;
 
         static void Main(string[] args)
         {
@@ -30,7 +31,7 @@ namespace WarehouseComputer
             Thread ReadOrder = new Thread(() => WarehouseComputerCommThread.Execute(WarehouseComputerPipe, OrdersFromWebServer));
             ReadOrder.Start();
 
-            testFindRoute();
+            //TestFindRoute();
 
             for (int i = 0; i < 2; i++)
             {
@@ -40,10 +41,52 @@ namespace WarehouseComputer
                 t.Start(); //should we join threads ?
             }
 
-            testRobotsOrder();
+            allProducts = new List<Product>();
+            //TestRobotsOrder();
+
+            InitDatabase();
+            ReadProducts();
         }
 
-        private static void testFindRoute()
+        private static void InitDatabase()
+        {
+            string fileName = "Database.json";
+
+            List<Product> products = new List<Product>();
+            Product p = new Product("Apple", 100);
+            products.Add(p);
+            p = new Product("Playstation", 10);
+            products.Add(p);
+            p = new Product("UE Boom", 15);
+            products.Add(p);
+            p = new Product("Book", 65);
+            products.Add(p);
+            p = new Product("Bananas", 80);
+            products.Add(p);
+            p = new Product("MacBookPro", 20);
+            products.Add(p);
+
+            string jsonString = JsonSerializer.Serialize(products);
+            File.WriteAllText(fileName, jsonString);
+
+            Console.WriteLine("Files written in Database.json!");
+
+        }
+
+
+        private static void ReadProducts()
+        {
+            string fileName = "Database.json";
+            string jsonString = File.ReadAllText(fileName);
+            allProducts = JsonSerializer.Deserialize<List<Product>>(jsonString);
+            for (int i = 0; i < allProducts.Count; i++)
+            {
+                Console.WriteLine($"Item {i} : {allProducts[i].ProductName}");
+            }
+
+        }
+
+        private static void TestFindRoute()
         {
             // Route testing
             List<Location> locations = new List<Location>();
@@ -62,7 +105,7 @@ namespace WarehouseComputer
             }
         }
 
-        private static void testRobotsOrder()
+        private static void TestRobotsOrder()
         {
             Order order1 = new Order(0);
             Product p = new Product("banana", 1, new Location(4, 2, 0, 2), 1);

@@ -6,7 +6,7 @@ namespace AmazoomClassLibrary
     public class Product
     {
 
-        public string ProductName;
+        public string ProductName { get; set; }
 
         public int NumOfProduct { get; set; }
 
