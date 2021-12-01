@@ -8,7 +8,7 @@ namespace AmazoomClassLibrary
 
         public string ProductName;
 
-        public static int numOfProduct { get; set; }
+        public int NumOfProduct { get; set; }
 
         public double Weight { get; set; }
 
