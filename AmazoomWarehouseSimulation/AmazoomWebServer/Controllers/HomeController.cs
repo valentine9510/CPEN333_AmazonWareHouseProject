@@ -28,6 +28,14 @@ namespace AmazoomWebServer.Controllers
             return View();
         }
 
+        public IActionResult Orderspage()
+        {
+            ProductInventory.LoadRandomObjects();
+            List<ProductFront> availableProducts = ProductInventory.getInventory();
+
+            return View(availableProducts);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

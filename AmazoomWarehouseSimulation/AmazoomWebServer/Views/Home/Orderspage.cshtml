@@ -1,0 +1,92 @@
+﻿@model List<AmazoomWebServer.Models.ProductFront>
+@{
+    ViewData["Title"] = "Orderspage";
+}
+<head>
+    <title>Orderspage</title>
+    <link href="~/css/table.css" rel="stylesheet" />
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+
+</head>
+
+<body>
+    <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif;"><strong>Inventory</strong></p>
+    <link href="~/css/table.css" rel="stylesheet" />
+
+
+    <div class="row" style="text-align:center; width: 750px; margin: auto">
+        <div class="col-sm-4" style="border-color:black">
+            <div class="dropdown">
+                <button type="button" class="dropdown-label" style="color:black; font: normal 2em 'Playfair Display SC', serif;">
+                    Current Order
+                </button>
+                <div class="dropdown-items" style="background-color:lightgrey">
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4" style="border-color:black">
+            <div class="dropdown">
+                <button type="button" class="dropdown-label" style="color:darkred; font: normal 2em 'Playfair Display SC', serif;">
+                    Orders in progress
+                </button>
+                <div class="dropdown-items" style="background-color:lightgoldenrodyellow">
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4" style="border-color:black">
+            <div class="dropdown">
+                <button type="button" class="dropdown-label" style="color:green; font: normal 2em 'Playfair Display SC', serif;">
+                    Completed Orders
+                </button>
+                <div class="dropdown-items">
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
+                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <table id="inventoryTable">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Weight</th>
+                <th>Quantity</th>
+                <th>Add to order</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td data-column="Product">@item.name</td>
+                    <td data-column="Weight">@item.weight</td>
+                    <td data-column="Quantity Available">@item.numOfProduct</td>
+                    <td data-column="Add to order">
+                        <div>
+                            <input type="number" class="count" name="qty" value="0">
+                            <button style="background-color:forestgreen; color:white" id="plusButton" onclick="">Add</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+
+
+
