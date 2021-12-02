@@ -156,4 +156,27 @@ and also iPads specifically.
     background-color: #f1faee;
 }
 
+.button4 {
+    color: white;
+    align-content: center;
+    margin: 10px;
+    margin-left: 35px;
+    box-shadow: inherit;
+    border-radius: 1.5em;
+    display: inline-block;
+    padding: 0.3em 1.2em;
+    transition: all 0.2s;
+}
+
+    .button4:hover {
+        border-color: rgba(255,255,255,1);
+    }
+
+@media all and (max-width:30em) {
+      .button4 {
+        display: block;
+        margin: 0.2em auto;
+    }
+}
+
 
