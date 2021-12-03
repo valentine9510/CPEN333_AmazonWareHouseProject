@@ -10,7 +10,7 @@ namespace AmazoomClassLibrary
         {
             this.x = x;
             this.y = y;
-            this.leftOrRight = leftOrRight;
+            this.leftOrRight = leftOrRight; //Left -> leftOrRight = 0, Right -> leftOrRight = 1
             this.shelf = shelf;
         }
 
@@ -38,6 +38,11 @@ namespace AmazoomClassLibrary
             }
 
             return 1; //we just need to sort them in whatever order of same row + column
+        }
+
+        public override string ToString() {
+            string lor = leftOrRight == 1 ? "right" : "left";
+            return $"Column {x}, Row {y}, on the {lor}, Shelf {shelf}";
         }
     }
 }

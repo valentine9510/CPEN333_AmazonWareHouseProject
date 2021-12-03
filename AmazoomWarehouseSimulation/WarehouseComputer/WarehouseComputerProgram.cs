@@ -18,20 +18,18 @@ namespace WarehouseComputer
         public static WarehouseMap map;
         private static Queue<Robot> waitingRobots;
         private static Queue<Order> waitingOrders;
-        private static List<Product> allProducts;
 
         static void Main(string[] args)
         {
-            map = new WarehouseMap(15, 5);
+            map = new WarehouseMap(15, 5, 5);
             waitingRobots = new Queue<Robot>();
             waitingOrders = new Queue<Order>();
-            WarehouseComputerStartup StartupObject = new WarehouseComputerStartup();
+
+            /*WarehouseComputerStartup StartupObject = new WarehouseComputerStartup();
             AnonymousPipeServerStream WarehouseComputerPipe = StartupObject.WarehouseComputerPipe;
             Queue<Order> OrdersFromWebServer = new Queue<Order>();
             Thread ReadOrder = new Thread(() => WarehouseComputerCommThread.Execute(WarehouseComputerPipe, OrdersFromWebServer));
             ReadOrder.Start();
-
-            //TestFindRoute();
 
             for (int i = 0; i < 2; i++)
             {
@@ -39,13 +37,11 @@ namespace WarehouseComputer
                 waitingRobots.Enqueue(r);
                 Thread t = new Thread(() => r.Execute());
                 t.Start(); //should we join threads ?
-            }
-
-            allProducts = new List<Product>();
-            //TestRobotsOrder();
+            }*/
 
             InitDatabase();
             ReadProducts();
+            map.PopulateShelves();
         }
 
         private static void InitDatabase()
@@ -78,12 +74,18 @@ namespace WarehouseComputer
         {
             string fileName = "Database.json";
             string jsonString = File.ReadAllText(fileName);
-            allProducts = JsonSerializer.Deserialize<List<Product>>(jsonString);
-            for (int i = 0; i < allProducts.Count; i++)
+            map.Inventory = JsonSerializer.Deserialize<List<Product>>(jsonString);
+            for (int i = 0; i < map.Inventory.Count; i++)
             {
-                Console.WriteLine($"Item {i} : {allProducts[i].ProductName}");
+                Console.WriteLine($"Item {i} : {map.Inventory[i].ProductName}");
             }
 
+        }
+
+        private static void TestShelvesPopulation()
+        {
+            //edge cases -> too much products
+            map.PopulateShelves();
         }
 
         private static void TestFindRoute()
@@ -193,11 +195,11 @@ namespace WarehouseComputer
              */
 
             //get to A-up-5
-            route.Add(new Tuple<int, int>(0, map.nRow - 1));
-            route.Add(new Tuple<int, int>(1, map.nRow - 1));
+            route.Add(new Tuple<int, int>(0, map.NRow - 1));
+            route.Add(new Tuple<int, int>(1, map.NRow - 1));
 
             //move on A up
-            for (int i = map.nRow; i > 0; i--)
+            for (int i = map.NRow; i > 0; i--)
             {
                 route.Add(new Tuple<int, int>(1, i - 1));
             }
@@ -212,7 +214,7 @@ namespace WarehouseComputer
             foreach (var loc in locations)
             {
                 //items on A aisle are already collected while going to A1
-                if (loc.x != 0)
+                if (loc.x != 1)
                 {
                     //if we have to switch columns --> get to right column
                     if (loc.x > currCol)
@@ -251,7 +253,7 @@ namespace WarehouseComputer
              */
 
             //if last item was not on last column, get there
-            if (currCol != map.nCol - 1)
+            if (currCol != map.NCol - 1)
             {
                 route.Add(new Tuple<int, int>(++currCol, currRow)); //move on up aisle
                 for (int i = currRow; i > 0; i--)
@@ -259,18 +261,18 @@ namespace WarehouseComputer
                     route.Add(new Tuple<int, int>(currCol, i - 1)); //get to row1
                 }
                 currRow = 0;
-                for (int i = currCol; i < map.nCol - 1; i++)
+                for (int i = currCol; i < map.NCol - 1; i++)
                 {
                     route.Add(new Tuple<int, int>(i + 1, currRow));
                 }
             }
-            currCol = map.nCol - 1;
+            currCol = map.NCol - 1;
 
-            for (int i = currRow; i < map.nRow - 1; i++)
+            for (int i = currRow; i < map.NRow - 1; i++)
             {
                 route.Add(new Tuple<int, int>(currCol, i + 1));
             }
-            currRow = map.nRow - 1;
+            currRow = map.NRow - 1;
 
             //for now : truck at H5, later : truck.location.x
             for (int i = currCol; i > 5 * 2 - 1; i--)
