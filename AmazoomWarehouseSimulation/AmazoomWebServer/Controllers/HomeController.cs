@@ -44,6 +44,13 @@ namespace AmazoomWebServer.Controllers
             //Product tempProduct = currentItem;
             if (qty > currentItemNum || qty < 0) /*Avoid negative values*/
             {
+                if(qty > currentItemNum)
+                {
+                    tempInventory.currentAlert = new Alert(true, "Input of order must be less that available quantity of " + currentItemName);
+                } else if (qty < 0)
+                {
+                    tempInventory.currentAlert = new Alert(true, "Cannot input negative numbers");
+                }
                 return View("Orderspage", tempInventory);
             }
             else
@@ -82,6 +89,18 @@ namespace AmazoomWebServer.Controllers
             /* Clear  order*/
             if(ProductInventory.currentOrder.Products != null)
             {
+                // Add back items to inventory
+                //Clear current order
+                foreach (var item in ProductInventory.currentOrder.Products)
+                {
+                    foreach (var inventoryItem in ProductInventory.availableProducts)
+                    {
+                        if (item.ProductName == inventoryItem.ProductName)
+                        {
+                            inventoryItem.NumOfProduct += item.NumOfProduct; 
+                        }
+                    }
+                }
                 ProductInventory.currentOrder.Products.Clear();
             }
             
@@ -104,8 +123,16 @@ namespace AmazoomWebServer.Controllers
         {
             if (ProductInventory.completedOrders.Count >= 1)
             {
+
                 ProductInventory.completedOrders.Clear();
             }
+            return View("Orderspage", tempInventory);
+        }
+
+        public ActionResult removeAlert()
+        {
+            tempInventory.currentAlert.alertMessage = "";
+            tempInventory.currentAlert.showAlert = false;
             return View("Orderspage", tempInventory);
         }
 

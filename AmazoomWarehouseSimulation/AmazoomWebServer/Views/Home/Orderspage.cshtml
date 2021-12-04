@@ -204,10 +204,19 @@
                         <div>
                             @using (Html.BeginForm("AddToOrder", "Home", FormMethod.Post))
                             {
-                                <input type="number" class="count" name="qty" id="qty">
+                                <input type="number" class="count" name="qty" id="qty">                                
                                 <input type="hidden" name="currentItemName" id="currentItemName" value=@item.ProductName />
                                 <input type="hidden" name="currentItemNum" id="currentItemNum" value=@item.NumOfProduct />
                                 <input type="submit" value="Add to Order" style="background-color:forestgreen; color:white" />
+                            }
+                            @if (Model.currentAlert.showAlert == true)
+                            {
+                                @*<label>Showing alert</label>*@
+                                <script type="text/javascript">
+                                    $(document).ready( function() {
+                                        alert("Alert message");
+                                    });
+                                </script>
                             }
                         </div>
                     </td>

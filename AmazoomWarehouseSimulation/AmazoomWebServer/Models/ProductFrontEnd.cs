@@ -16,15 +16,26 @@ namespace AmazoomWebServer.Models
         //public url
     }
 
+    public class Alert
+    {
+        public bool showAlert { get; set; }
+        public string alertMessage { get; set; }
+
+        public Alert(bool show, string msg)
+        {
+            this.showAlert = show;
+            this.alertMessage = alertMessage;
+        }
+    }
 
     public class ProductInventory
     {
         static public List<Product> availableProducts  { get; set; }
         static public Order currentOrder { get; set; }
-
         public Product currentProduct { get; set; }
         static public Queue<Order> uncompletedOrders { get; set; }
         static public Queue<Order> completedOrders { get; set; }
+        public Alert currentAlert { get; set; }
 
         public ProductInventory()
         {
@@ -32,6 +43,7 @@ namespace AmazoomWebServer.Models
             uncompletedOrders = new Queue<Order>();
             completedOrders = new Queue<Order>();
             currentOrder = new Order(1);
+            this.currentAlert = new Alert(false, "");
             this.LoadRandomObjects();
         }
         public void LoadRandomObjects()
@@ -79,7 +91,7 @@ namespace AmazoomWebServer.Models
 
             //Add to current order
             currentOrder.AddProduct(new Product("Shirt", rand.Next(1, 10)));
-            currentOrder.AddProduct(new Product("Apples", rand.Next(1, 10)));
+            currentOrder.AddProduct(new Product("Apple", rand.Next(1, 10)));
             currentOrder.AddProduct(new Product("Laptop", rand.Next(1, 10)));
             currentOrder.AddProduct(new Product("Orange", rand.Next(1, 10)));
             currentOrder.AddProduct(new Product("Beer", rand.Next(1, 10)));
