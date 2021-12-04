@@ -20,13 +20,21 @@ namespace AmazoomClassLibrary
         {
             this.ProductName = name;
             this.NumOfProduct = num;
+            this.Location = new Location();
+        }
+
+        public Product(string name, int num, double weight)
+        {
+            this.ProductName = name;
+            this.NumOfProduct = num;
+            this.Weight = weight;
         }
 
         public Product(string name, int num, Location loc, double weight)
         {
             this.ProductName = name;
             this.NumOfProduct = num;
-            this.Location = loc;
+            this.Location = new Location(loc.x, loc.y, loc.leftOrRight, loc.shelf);
             this.Weight = weight;
         }
     }

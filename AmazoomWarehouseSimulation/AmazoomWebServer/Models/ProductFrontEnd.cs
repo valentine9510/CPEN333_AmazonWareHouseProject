@@ -23,6 +23,7 @@ namespace AmazoomWebServer.Models
 
         public int weight { get; set; }
 
+
         public ProductFront(string name, int num, int weight)
         {
             this.name = name;

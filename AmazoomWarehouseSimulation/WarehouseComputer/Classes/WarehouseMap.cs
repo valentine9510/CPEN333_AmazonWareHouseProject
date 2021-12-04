@@ -7,10 +7,10 @@ namespace WarehouseComputer.Classes
     public class WarehouseMap
     {
         public int NCol, NRow;
+        public int NShelves;
         public Cell[] Cells; //cells used for locking access
         public List<Product> Inventory;
         public int[,,] AvailableLocations;
-        public int NShelves;
 
         public WarehouseMap(int nCol, int nRow, int nShelves)
         {
@@ -27,15 +27,6 @@ namespace WarehouseComputer.Classes
                 }
             }
             Inventory = new List<Product>();
-            Product Banana = new Product("banana", 1, new Location(4, 2, 0, 2), 1);
-            Inventory.Add(Banana);
-            Product Apple = new Product("ananas", 1, new Location(2, 3, 1, 1), 1);
-            Inventory.Add(Apple);
-            Product Orange = new Product("orange", 1, new Location(8, 3, 0, 1), 1);
-            Inventory.Add(Orange);
-            Product Lemon = new Product("lemon", 1, new Location(12, 2, 1, 2), 1);
-            Inventory.Add(Lemon);
-
             AvailableLocations = new int[NCol - 1, NRow - 2, nShelves]; //no product can be placed on top+bottomRow/first column
         }
 
@@ -116,6 +107,14 @@ namespace WarehouseComputer.Classes
         public Cell GetCell(int row, int col)
         {
             return Cells[row * NCol + col];
+        }
+
+        public void AddProductToInventory(Product inputproduct, string filename)
+        {
+            Location location = FindFreeLocation();
+            inputproduct.Location = location;
+            Inventory.Add(inputproduct);
+            JSONFile.ConvertProductToJSON(Inventory, filename);
         }
     }
 }

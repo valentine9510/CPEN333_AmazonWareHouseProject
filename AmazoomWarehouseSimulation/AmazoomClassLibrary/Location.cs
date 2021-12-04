@@ -6,6 +6,8 @@ namespace AmazoomClassLibrary
     public class Location : IComparable
     {
         public int x, y, leftOrRight, shelf;
+
+        public Location() { }
         public Location(int x, int y, int leftOrRight, int shelf)
         {
             this.x = x;
@@ -17,17 +19,17 @@ namespace AmazoomClassLibrary
         public int CompareTo(object obj)
         {
             Location loc = (Location)obj;
-            if(this.x < loc.x)
+            if (this.x < loc.x)
             {
                 return -1;
             }
 
-            if(this.x > loc.x)
+            if (this.x > loc.x)
             {
                 return 1;
             }
 
-            if(this.y < loc.y)
+            if (this.y < loc.y)
             {
                 return -1;
             }
@@ -40,7 +42,8 @@ namespace AmazoomClassLibrary
             return 1; //we just need to sort them in whatever order of same row + column
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             string lor = leftOrRight == 1 ? "right" : "left";
             return $"Column {x}, Row {y}, on the {lor}, Shelf {shelf}";
         }
