@@ -1,6 +1,7 @@
-﻿@model List<AmazoomWebServer.Models.ProductFront>
+﻿@model AmazoomWebServer.Models.ProductInventory
 @{
     ViewData["Title"] = "Orderspage";
+
 }
 <head>
     <title>Orderspage</title>
@@ -12,81 +13,249 @@
 </head>
 
 <body>
-    <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif;"><strong>Inventory</strong></p>
+    <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif; padding-bottom:0.3em"><strong>Inventory</strong></p>
     <link href="~/css/table.css" rel="stylesheet" />
+    <link href="~/css/cards.css" rel="stylesheet" />
 
+    <div class="container_card">
+        <div class="card; dropdown_custom" style="background-color:lightgray">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Current Order
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightgrey;">
+                        @using (Html.BeginForm("AddOrderToQueue", "Home")) //Submit order button
+                        {
+                            <input type="submit" value="Submit Order" class="button4" style="        background-color: forestgreen;
+                                color: white;
+                                align-content: center;
+                                margin: 10px;
+                                margin-left: 35px;
+                                box-shadow:inherit;
+                                border-radius: 1.5em;
+                                display: inline-block;
+                                padding: 0.3em 1.2em;"
+                                onclick="displayConfirmation()" />
 
-    <div class="row" style="text-align:center; width: 750px; margin: auto">
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:black; font: normal 2em 'Playfair Display SC', serif;">
-                    Current Order
-                </button>
-                <div class="dropdown-items" style="background-color:lightgrey">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+                            
+                        }
+                        @using (Html.BeginForm("ClearOrder", "Home")) //Clear order button
+                        {
+                            <input type="submit" value="Clear Order" class="button4" style="        background-color: red;
+                                color: white;
+                                align-content: center;
+                                margin: 10px;
+                                margin-left: 35px;
+                                box-shadow:inherit;
+                                border-radius: 1.5em;
+                                display: inline-block;
+                                padding: 0.3em 1.2em;" 
+                                   onclick="displayCancellation()"
+                                   />
+                        }
+                        <table class="dropdown-item" style="font-size: 1em;">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var product in Model.getCurrentOrder().Products)
+                                {
+                                    <tr>
+                                        <td> @product.ProductName </td>
+                                        <td> @product.NumOfProduct </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
+
             </div>
         </div>
 
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:darkred; font: normal 2em 'Playfair Display SC', serif;">
-                    Orders in progress
-                </button>
-                <div class="dropdown-items" style="background-color:lightgoldenrodyellow">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+        <div class="card; dropdown_custom" style="background-color:lightsalmon">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Orders in Progress
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightpink">
+                        @using (Html.BeginForm("ClearsOrdersInProgress", "Home")) //Submit order button
+                        {
+                            <input type="submit" value="Clear queued orders" style="background-color:red; 
+                                color: white;
+                                align-content: center;
+                                margin: 10px;
+                                margin-left: 15px;
+                                box-shadow:inherit;
+                                border-radius: 1.5em;
+                                display: inline-block;
+                                padding: 0.3em 1.2em;
+                            " />
+                        }
+                        <table class="dropdown-item" style="font-size: 1em;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.getUncompletedOrdersQueue())
+                                {
+                                    <tr>
+                                        <td>
+                                            @order.OrderID
+                                        </td>
+                                        <td>
+                                            @foreach (var item in order.Products)
+                                            {
+                                                <div class="row" style="text-align:center; padding:12px">@item.ProductName -> @item.NumOfProduct</div>
+                                            }
 
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
             </div>
         </div>
 
-        <div class="col-sm-4" style="border-color:black">
-            <div class="dropdown">
-                <button type="button" class="dropdown-label" style="color:green; font: normal 2em 'Playfair Display SC', serif;">
-                    Completed Orders
-                </button>
-                <div class="dropdown-items">
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">testing</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Blog</p2>
-                    <p2 href="#" class="dropdown-item" style="font-size: 1em;">Contact</p2>
+        <div class="card; dropdown_custom" style="background-color:lightgreen">
+            <p class="card__name">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-label">
+                        Past Orders
+                    </button>
+                    <div class="dropdown-items" style="background-color:lightgreen">
+                        @using (Html.BeginForm("ClearsCompletedOrder", "Home")) //Submit order button
+                        {
+                            <input type="submit" value="Clear past orders" style="        background-color: red;
+                                    color: white;
+                                    color: white;
+                                    align-content: center;
+                                    margin: 10px;
+                                    margin-left: 25px;
+                                    box-shadow: inherit;
+                                    border-radius: 1.5em;
+                                    display: inline-block;
+                                    padding: 0.3em 1.2em;
+                            " />
+                        }
+                        <table class="dropdown-item" style="font-size: 1em;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.getCompletedOrdersQueue())
+                                {
+                                    <tr>
+                                        <td>
+                                            @order.OrderID
+                                        </td>
+                                        <td>
+                                            @foreach (var item in order.Products)
+                                            {
+                                                <div class="row" style="text-align:center; padding:12px">@item.ProductName -> @item.NumOfProduct</div>
+                                            }
+
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </p>
+            <div class="grid-container">
             </div>
         </div>
+
     </div>
 
-
-
-    <table id="inventoryTable">
+    <table id="inventoryTable" style="box-shadow: 0 1px 2px rgba(0,0,0,0.5);">
         <thead>
             <tr>
                 <th>Product</th>
-                <th>Weight</th>
                 <th>Quantity</th>
                 <th>Add to order</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            <tr>
+                @using (Html.BeginForm("AddToInventory", "Home", FormMethod.Post))
+                {
+                <td data-column="Product">
+                    <input type="text" name="newProductName" id="newProductName">
+                    <p><strong>Input name</strong></p>
+                </td>
+                <td data-column="Quantity Available">
+                    <input type="text" name="newProductQty" id="newProductQty">
+                    <p><strong>Input quantity</strong> </p>
+                </td>
+                    <td data-column="Add to order">
+                        <input type="submit" value="Add to Inventory" style="background-color:darkblue; color:white; border-radius:0.5em" />
+                    </td>
+                }
+            </tr>
+            @foreach (var item in Model.getInventory())
             {
                 <tr>
-                    <td data-column="Product">@item.name</td>
-                    <td data-column="Weight">@item.weight</td>
-                    <td data-column="Quantity Available">@item.numOfProduct</td>
+                    <td data-column="Product">@item.ProductName</td>
+                    <td data-column="Quantity Available">@item.NumOfProduct</td>
                     <td data-column="Add to order">
                         <div>
-                            <input type="number" class="count" name="qty" value="0">
-                            <button style="background-color:forestgreen; color:white" id="plusButton" onclick="">Add</button>
+                            @using (Html.BeginForm("AddToOrder", "Home", FormMethod.Post))
+                            {
+                                <input type="number" class="count" name="qty" id="qty">
+                                <input type="hidden" name="currentItemName" id="currentItemName" value=@item.ProductName />
+                                <input type="hidden" name="currentItemNum" id="currentItemNum" value=@item.NumOfProduct />
+                                <input type="submit" value="Add to Order" style="background-color:forestgreen; color:white; border-radius:0.5em" />
+                            }
+
+
+                            @if (Model.currentAlert.showAlert == true)
+                            {
+                                <p hidden id="alertMessage">@Model.currentAlert.alertMessage</p>
+                                <script type="text/javascript">
+                                    var message = document.getElementById("alertMessage").innerText;
+                                    alert(message);
+                                </script>
+                                <p hidden>@Model.RemoveAlert()</p>
+                            }
                         </div>
                     </td>
                 </tr>
             }
+
         </tbody>
     </table>
 </body>
 
+<script type="text/javascript">
+    function displayConfirmation() {
+        alert("Placed Order");
+    }
+
+    function displayCancellation() {
+        alert("Order Cancelled");
+    }
+</script>
 
 

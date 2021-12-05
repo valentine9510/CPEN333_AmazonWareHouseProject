@@ -12,7 +12,7 @@ namespace AmazoomWebServer
     {
         public static NamedPipeClientStream WebServerPipe;
 
-        public static Queue<Order> OrderQueue;
+        public static Queue<Order> OrderQueue = new Queue<Order>();
 
         public static int OrderIDCounter;
 

@@ -40,6 +40,17 @@ namespace AmazoomClassLibrary
 
         public void AddProduct(Product inputProduct)
         {
+            /* If product already exists, just update it */
+            foreach(var item in Products)
+            {
+                if(item.ProductName == inputProduct.ProductName)
+                {
+                    item.NumOfProduct += inputProduct.NumOfProduct;
+                    return;
+                }
+            }
+
+            /* If item is not found */
             this.Products.Add(inputProduct);
             OrderWeight += inputProduct.Weight;
         }

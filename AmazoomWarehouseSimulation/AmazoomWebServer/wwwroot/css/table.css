@@ -76,17 +76,27 @@ and also iPads specifically.
 
 /* Drop down items */
 .dropdown {
-    font-family: Garamond, serif;
+    color: black;
+    font: normal 1em 'Playfair Display SC', serif;
     position: relative;
     display: inline;
 }
 
+.dropdown_custom {
+    background-color: #222831;
+    height: 80px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 .dropdown-label {
     background-color: transparent;
-    color: darkblue;
     border: none;
     text-decoration: none;
-    font-size: 2em;
+    font-size: 1.5em;
     margin: 0;
     padding-bottom: 0.5rem;
     cursor: pointer;
@@ -118,6 +128,11 @@ and also iPads specifically.
     transition: background-color 0.2s ease-in-out;
 }
 
+.dropdown_custom:focus-within .dropdown-items,
+.dropdown_custom:hover .dropdown-items {
+    opacity: 1;
+    transform: scale(1);
+}
 .dropdown:focus-within .dropdown-items,
 .dropdown:hover .dropdown-items {
     opacity: 1;
@@ -139,6 +154,29 @@ and also iPads specifically.
 
 .dropdown-item:focus-visible {
     background-color: #f1faee;
+}
+
+.button4 {
+    color: white;
+    align-content: center;
+    margin: 10px;
+    margin-left: 35px;
+    box-shadow: inherit;
+    border-radius: 1.5em;
+    display: inline-block;
+    padding: 0.3em 1.2em;
+    transition: all 0.2s;
+}
+
+    .button4:hover {
+        border-color: rgba(255,255,255,1);
+    }
+
+@media all and (max-width:30em) {
+      .button4 {
+        display: block;
+        margin: 0.2em auto;
+    }
 }
 
 

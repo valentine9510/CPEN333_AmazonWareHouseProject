@@ -20,10 +20,12 @@ namespace WarehouseComputer.Classes
         private Cell currCell;
         private List<Tuple<int, int>> route;
         public Order currOrder;
+
         private Location truckLocation;
         private Truck truck;
+        //public Mutex robotmutex;
 
-        public Robot(int id, double maxWeight, double currWeight)
+        public Robot(int id, double maxWeight, double currWeight, Mutex mutex)
         {
             this.id = id;
             this.maxWeight = maxWeight;
@@ -32,6 +34,7 @@ namespace WarehouseComputer.Classes
             this.currCell = null;
             this.currOrder = null;
             this.route = new List<Tuple<int, int>>();
+            //this.robotmutex = mutex;
         }
 
         public void SetRoute(List<Tuple<int, int>> route)
@@ -135,7 +138,7 @@ namespace WarehouseComputer.Classes
 
             foreach (Product p in currOrder.Products)
             {
-                Console.Write("{0} ", p.ProductName);
+                Console.Write($"{p.ProductName} ");
             }
             Console.Write(".\n");
         }
