@@ -26,23 +26,35 @@ namespace WarehouseComputer
 
         static void Main(string[] args)
         {
-            map = WarehouseComputerStartup.InitWarehouseMap();
-            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map);
+            map = WarehouseComputerStartup.InitWarehouseMap(true);
+            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
             AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
 
-            for (int i = 0; i < 1; i++)
+            Robot[] r = new Robot[5];
+            Thread[] t = new Thread[5];
+            Mutex robotmutex = new Mutex();
+
+            for (int i = 0; i < 5; i++)
             {
-                Robot r = new Robot(i, 10, 0);
-                Thread t = new Thread(() => r.Execute());
-                t.Start(); //should we join threads ?
+                int threadnum = i;
+                r[threadnum] = new Robot(threadnum, 10, 0, robotmutex);
+                t[threadnum] = new Thread(() => r[threadnum].Execute());
+                t[threadnum].Start(); //should we join threads ?
             }
 
+            Console.WriteLine(Program.OrdersFromWebServer.Count());
             Console.ReadKey();
             Order testorder = new Order(1);
             testorder.AddProduct(map.Inventory[0]);
             testorder.AddProduct(map.Inventory[1]);
-            AddToQueue(testorder);
-            Console.ReadKey();
+            robotmutex.WaitOne();
+            OrdersFromWebServer.Enqueue(testorder);
+            OrdersFromWebServer.Enqueue(testorder);
+            OrdersFromWebServer.Enqueue(testorder);
+            OrdersFromWebServer.Enqueue(testorder);
+            OrdersFromWebServer.Enqueue(testorder);
+            robotmutex.ReleaseMutex();
+             Console.ReadKey();
 
             //Console.ReadKey();
             //foreach(Order order in OrdersFromWebServer)
@@ -53,28 +65,28 @@ namespace WarehouseComputer
         }
 
 
-        public static void AddToQueue(Order OrderedProduct)
-        {
-            mutex.WaitOne();
-            OrdersFromWebServer.Enqueue(OrderedProduct);
-            mutex.ReleaseMutex();
-        }
+        //public static void AddToQueue(Order OrderedProduct)
+        //{
+        //    mutex.WaitOne();
+        //    OrdersFromWebServer.Enqueue(OrderedProduct);
+        //    mutex.ReleaseMutex();
+        //}
 
-        public static Order TakeFromQueue()
-        {
-            mutex.WaitOne();
-            Order ReturnOrder = OrdersFromWebServer.Dequeue();
-            mutex.ReleaseMutex();
-            return ReturnOrder;
-        }
+        //public static Order TakeFromQueue()
+        //{
+        //    mutex.WaitOne();
+        //    Order ReturnOrder = OrdersFromWebServer.Dequeue();
+        //    mutex.ReleaseMutex();
+        //    return ReturnOrder;
+        //}
 
-        public static int ReturnQueueCount()
-        {
-            mutex.WaitOne();
-            int count = OrdersFromWebServer.Count;
-            mutex.ReleaseMutex();
-            return count;
-        }
+        //public static int ReturnQueueCount()
+        //{
+        //    mutex.WaitOne();
+        //    int count = OrdersFromWebServer.Count;
+        //    mutex.ReleaseMutex();
+        //    return count;
+        //}
     }
 
 }
