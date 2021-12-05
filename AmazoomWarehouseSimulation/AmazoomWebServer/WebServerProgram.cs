@@ -25,11 +25,10 @@ namespace AmazoomWebServer
             ServerCommThread ThreadInstance = new ServerCommThread(PipeHandle);
             Thread SendOrders = new Thread(new ThreadStart(ThreadInstance.Execute));
             SendOrders.Start();
-            
+            /* Sample */
 
-            
             CreateHostBuilder(args).Build().Run();
-            
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
