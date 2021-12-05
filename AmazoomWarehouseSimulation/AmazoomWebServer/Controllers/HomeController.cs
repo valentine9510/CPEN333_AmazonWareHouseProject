@@ -33,23 +33,28 @@ namespace AmazoomWebServer.Controllers
 
         public IActionResult Orderspage()
         {
-            
-
             return View(tempInventory);
         }
 
         [HttpPost]
         public ActionResult AddToOrder(int qty, string currentItemName, int currentItemNum)
         {
+
             //Product tempProduct = currentItem;
-            if (qty > currentItemNum || qty < 0) /*Avoid negative values*/
+            if (qty > currentItemNum || qty <= 0) /*Avoid negative values*/
             {
                 if(qty > currentItemNum)
                 {
-                    tempInventory.currentAlert = new Alert(true, "Input of order must be less that available quantity of " + currentItemName);
+                    tempInventory.currentAlert.alertMessage = "Inventory has maximum of "+ currentItemNum + " " + currentItemName + "s";
+                    tempInventory.currentAlert.showAlert = true;
                 } else if (qty < 0)
                 {
-                    tempInventory.currentAlert = new Alert(true, "Cannot input negative numbers");
+                    tempInventory.currentAlert.alertMessage = "Cannot order negative " + currentItemName + "s";
+                    tempInventory.currentAlert.showAlert = true;
+                } else
+                {
+                    tempInventory.currentAlert.alertMessage = "Cannot order 0 " + currentItemName + "s";
+                    tempInventory.currentAlert.showAlert = true;
                 }
                 return View("Orderspage", tempInventory);
             }
@@ -129,10 +134,26 @@ namespace AmazoomWebServer.Controllers
             return View("Orderspage", tempInventory);
         }
 
-        public ActionResult removeAlert()
+        [HttpPost]
+        public ActionResult AddToInventory( string newProductName, int newProductQty)
         {
-            tempInventory.currentAlert.alertMessage = "";
-            tempInventory.currentAlert.showAlert = false;
+            if (newProductQty < 0 || newProductName.Length < 1)
+            {
+                return View("Orderspage", tempInventory);
+            }
+            
+            foreach( var product in ProductInventory.availableProducts)
+            {
+                if(product.ProductName == newProductName)
+                {
+                    product.NumOfProduct += newProductQty;
+                    return View("Orderspage", tempInventory);
+
+                }
+            }
+
+            ProductInventory.availableProducts.Add(new Product(newProductName, newProductQty));
+
             return View("Orderspage", tempInventory);
         }
 

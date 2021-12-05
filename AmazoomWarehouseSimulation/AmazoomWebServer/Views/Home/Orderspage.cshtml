@@ -35,8 +35,10 @@
                                 box-shadow:inherit;
                                 border-radius: 1.5em;
                                 display: inline-block;
-                                padding: 0.3em 1.2em;" 
-                              />
+                                padding: 0.3em 1.2em;"
+                                onclick="displayConfirmation()" />
+
+                            
                         }
                         @using (Html.BeginForm("ClearOrder", "Home")) //Clear order button
                         {
@@ -48,8 +50,9 @@
                                 box-shadow:inherit;
                                 border-radius: 1.5em;
                                 display: inline-block;
-                                padding: 0.3em 1.2em;
-                           "  />
+                                padding: 0.3em 1.2em;" 
+                                   onclick="displayCancellation()"
+                                   />
                         }
                         <table class="dropdown-item" style="font-size: 1em;">
                             <thead>
@@ -195,6 +198,22 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                @using (Html.BeginForm("AddToInventory", "Home", FormMethod.Post))
+                {
+                <td data-column="Product">
+                    <input type="text" name="newProductName" id="newProductName">
+                    <p><strong>Input name</strong></p>
+                </td>
+                <td data-column="Quantity Available">
+                    <input type="text" name="newProductQty" id="newProductQty">
+                    <p><strong>Input quantity</strong> </p>
+                </td>
+                    <td data-column="Add to order">
+                        <input type="submit" value="Add to Inventory" style="background-color:forestgreen; color:white; border-radius:0.5em" />
+                    </td>
+                }
+            </tr>
             @foreach (var item in Model.getInventory())
             {
                 <tr>
@@ -204,27 +223,39 @@
                         <div>
                             @using (Html.BeginForm("AddToOrder", "Home", FormMethod.Post))
                             {
-                                <input type="number" class="count" name="qty" id="qty">                                
+                                <input type="number" class="count" name="qty" id="qty">
                                 <input type="hidden" name="currentItemName" id="currentItemName" value=@item.ProductName />
                                 <input type="hidden" name="currentItemNum" id="currentItemNum" value=@item.NumOfProduct />
-                                <input type="submit" value="Add to Order" style="background-color:forestgreen; color:white" />
+                                <input type="submit" value="Add to Order" style="background-color:forestgreen; color:white; border-radius:0.5em" />
                             }
+
+
                             @if (Model.currentAlert.showAlert == true)
                             {
-                                @*<label>Showing alert</label>*@
+                                <p hidden id="alertMessage">@Model.currentAlert.alertMessage</p>
                                 <script type="text/javascript">
-                                    $(document).ready( function() {
-                                        alert("Alert message");
-                                    });
+                                    var message = document.getElementById("alertMessage").innerText;
+                                    alert(message);
                                 </script>
+                                <p hidden>@Model.RemoveAlert()</p>
                             }
                         </div>
                     </td>
                 </tr>
             }
+
         </tbody>
     </table>
 </body>
 
+<script type="text/javascript">
+    function displayConfirmation() {
+        alert("Placed Order");
+    }
+
+    function displayCancellation() {
+        alert("Order Cancelled");
+    }
+</script>
 
 

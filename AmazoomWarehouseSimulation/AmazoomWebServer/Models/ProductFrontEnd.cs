@@ -123,5 +123,12 @@ namespace AmazoomWebServer.Models
             return currentOrder;
         }
 
+        public string RemoveAlert()
+        {
+            this.currentAlert.alertMessage = "";
+            this.currentAlert.showAlert = false;
+            return "";
+        }
+
     }
 }
