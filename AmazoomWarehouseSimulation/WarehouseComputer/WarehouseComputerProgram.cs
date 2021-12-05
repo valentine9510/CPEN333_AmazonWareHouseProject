@@ -21,8 +21,15 @@ namespace WarehouseComputer
         public static string CurrentDatabaseName;
         private static Queue<Robot> waitingRobots;
         public static Queue<Order> OrdersFromWebServer = new Queue<Order>();
-        private static Queue<Order> waitingOrders;
+        public static Queue<Order> WaitingOrders;
         private static Mutex mutex = new Mutex();
+
+
+        public static Queue<Truck> WaitingTrucks;
+        public static List<Truck> Docks;
+        public static Location[] dockLocations;
+        public static int nDockedTrucks;
+        public static int NextTruck;
 
         static void Main(string[] args)
         {

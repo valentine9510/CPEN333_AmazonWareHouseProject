@@ -20,6 +20,8 @@ namespace WarehouseComputer.Classes
         private Cell currCell;
         private List<Tuple<int, int>> route;
         public Order currOrder;
+        private Location truckLocation;
+        private Truck truck;
 
         public Robot(int id, double maxWeight, double currWeight)
         {
@@ -42,25 +44,95 @@ namespace WarehouseComputer.Classes
 
             while (true)
             {
-                if (Program.ReturnQueueCount() != 0)
+                GetOrder();
+                GetAvailableTruck();
+                List<Location> productlocations = new List<Location>();
+                foreach (Product p in currOrder.Products)
                 {
-                    // set robot status to fulfilling order
-                    GetOrder();
-                    List<Location> productlocations = new List<Location>();
-                    foreach(Product p in currOrder.Products)
-                    {
-                        productlocations.Add(p.Location);
-                    }
-                    this.route = FindRoute(productlocations);
-                    ExecRoute();
+                    productlocations.Add(p.Location);
                 }
+                this.route = FindRoute(productlocations);
+                ExecRoute();
             }
         }
 
+        public void GetAvailableTruck()
+        {
+            Truck truck;
+            lock (Program.Docks)
+            {
+                if(Program.Docks.Count == 0)
+                {
+                    Monitor.Wait(Program.Docks);
+                }
+                
+                if(Program.Docks.Count == 1)
+                {
+                    truck = Program.Docks[0];
+                }
+                else
+                {
+                    truck = Program.Docks[Program.NextTruck];
+                    Program.NextTruck = (Program.NextTruck + 1) % 2;
+                }
+                
+            }
+
+            Monitor.Enter(truck.WeightMonitor);
+            if (truck.ReservedWeight + this.currOrder.OrderWeight > truck.MaxWeight)
+            {
+                Monitor.Exit(truck.WeightMonitor);
+                truck.LeaveDock();
+                lock (Program.Docks)
+                {
+                    Program.Docks.Remove(truck);
+                }
+                lock (Program.WaitingTrucks)
+                {
+                    if (Program.WaitingTrucks.Count > 0)
+                    {
+                        Truck newTruck = Program.WaitingTrucks.Dequeue();
+                        Program.Docks.Add(newTruck);
+                        lock (Program.Docks)
+                        {
+                            newTruck.Dock = Program.Docks.Count;
+                        }
+                    }
+                }
+                GetAvailableTruck();
+            }
+            else
+            {
+                if(truck.Dock == 0)
+                {
+                    this.truckLocation = new Location(3, Program.map.NRow - 1, 0, 0);
+                }
+                else
+                {
+                    this.truckLocation = new Location(2, Program.map.NRow - 1, 0, 0);
+                }
+                truck.ReservedWeight += currOrder.OrderWeight;
+                Monitor.Exit(truck.WeightMonitor);
+
+            }
+            this.truck = truck;
+
+        }
+
+
         public void GetOrder()
         {
+            lock (Program.WaitingOrders)
+            {
+                if(Program.WaitingOrders.Count == 0)
+                {
+                    Monitor.Wait(Program.WaitingOrders);
+                }
+                this.currOrder = Program.WaitingOrders.Dequeue();
+            }
+
             Console.Write("Robot {0} starting route for : ", id);
-            this.currOrder = Program.TakeFromQueue();
+
             foreach (Product p in currOrder.Products)
             {
                 Console.Write("{0} ", p.ProductName);
@@ -96,6 +168,11 @@ namespace WarehouseComputer.Classes
                     }
                 }
 
+                if(currCell.x == truckLocation.x && currCell.y == truckLocation.y)
+                {
+                    LoadTruck();
+                }
+
                 Thread.Sleep(500); //simulates time needed by robot to move to next cell
             }
 
@@ -110,6 +187,22 @@ namespace WarehouseComputer.Classes
             //set status to waiting again
         }
 
+        public void LoadTruck()
+        {
+            foreach (var product in currOrder.Products)
+            {
+                Console.WriteLine($"Loading truck {truck.Id} with {product.ProductName}.");
+                Thread.Sleep(1500); //simulates loading truck
+                lock (truck.WeightMonitor)
+                {
+                    truck.CurrWeight += currOrder.OrderWeight;
+                    Console.WriteLine($"Truck {truck.Id} contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
+                }
+                
+            }
+            Console.WriteLine($"Truck {truck.Id} loaded !");
+        }
+
         public Cell GetCurrCell()
         {
             return this.currCell;
@@ -122,6 +215,14 @@ namespace WarehouseComputer.Classes
             Console.WriteLine("Fetching {0}...", p.ProductName);
             Thread.Sleep(1500);
             Console.WriteLine("{0} fetched !", p.ProductName);
+        }
+
+        private void PlaceOrderInTruck(Truck truck)
+        {
+            if(truck.CurrWeight + currOrder.OrderWeight > truck.MaxWeight)
+            {
+                truck.LeaveDock();
+            }
         }
 
         private static List<Tuple<int, int>> FindRoute(List<Location> locations)

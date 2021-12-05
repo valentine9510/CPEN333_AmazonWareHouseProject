@@ -27,6 +27,7 @@ namespace AmazoomClassLibrary
         public Order()
         {
             Products = new List<Product>();
+            OrderWeight = 0;
             // maybe have to initialise Status enum
         }
 
@@ -40,6 +41,7 @@ namespace AmazoomClassLibrary
         public void AddProduct(Product inputProduct)
         {
             this.Products.Add(inputProduct);
+            OrderWeight += inputProduct.Weight;
         }
 
         public void RemoveProduct(string name)
