@@ -21,7 +21,6 @@ namespace AmazoomWebServer
         public static void Main(string[] args)
         {
             string PipeHandle = args[0];
-            Globals.OrderQueue = new Queue<Order>();
             ServerCommThread ThreadInstance = new ServerCommThread(PipeHandle);
             Thread SendOrders = new Thread(new ThreadStart(ThreadInstance.Execute));
             SendOrders.Start();

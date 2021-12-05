@@ -33,6 +33,9 @@ namespace AmazoomWebServer.Controllers
 
         public IActionResult Orderspage()
         {
+            /* Update uncompleted orders from Global queue */
+            ProductInventory.uncompletedOrders = Globals.OrderQueue;
+
             return View(tempInventory);
         }
 
@@ -79,12 +82,20 @@ namespace AmazoomWebServer.Controllers
             if (ProductInventory.currentOrder.Products.Count >= 1) /* Only add if it has at least a product */
             {
                 Order tempOrder = ProductInventory.currentOrder;
-                ProductInventory.uncompletedOrders.Enqueue(tempOrder);
+                //ProductInventory.uncompletedOrders.Enqueue(tempOrder);
+                //Globals.OrderQueue.Enqueue(tempOrder);
+                Globals.AddToQueue(tempOrder);
 
                 /* Reset order, add one to ID for next Order */
                 ProductInventory.currentOrder = new Order(ProductInventory.currentOrder.OrderID + 1);
+
+                /* Update database */
+                JSONFile.ConvertProductToJSON(ProductInventory.availableProducts, "C:\\Users\\hp\\Source\\Repos\\CPEN333_AmazonWareHouseProject\\AmazoomWarehouseSimulation\\FruitDatabase.json");
             }
-            
+
+            /* Update uncompleted orders from Global queue */
+            ProductInventory.uncompletedOrders = Globals.OrderQueue;
+
             return View("Orderspage", tempInventory);
         }
 
