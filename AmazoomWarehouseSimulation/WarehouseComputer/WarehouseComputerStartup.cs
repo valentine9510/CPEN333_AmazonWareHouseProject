@@ -85,5 +85,59 @@ namespace WarehouseComputer
             JSONFile.ConvertProductToJSON(map.Inventory, filename);
             return filename;
         }
+
+        public static WarehouseMap InitWarehouseMap(bool isdefault)
+        {
+            Console.WriteLine("Hello! Welcome to the Amazoom Warehouse Simulation\n");
+            //Console.WriteLine("Please enter the Warehouse Dimensions below:-");
+            //string row;
+            //string column;
+            //string shelf;
+            //do
+            //{
+            //    Console.Write("No. of Rows: ");
+            //    row = Console.ReadLine();
+            //} while (int.TryParse(row, out int value) == false);
+            //do
+            //{
+            //    Console.Write("No. of Columns: ");
+            //    column = Console.ReadLine();
+            //} while (int.TryParse(column, out int value) == false);
+            //do
+            //{
+            //    Console.Write("No. of shelves: ");
+            //    shelf = Console.ReadLine();
+            //} while (int.TryParse(shelf, out int value) == false);
+
+            //Console.WriteLine("");
+            return new WarehouseMap(15, 15, 5);
+        }
+
+        public static string InitProductInventory(WarehouseMap map, bool isdefault)
+        {
+            //bool stay_in_while = true;
+            string filename = "";
+            //while (stay_in_while)
+            //{
+            //    Console.WriteLine("Please enter the name of the preferred database file: ");
+            //    filename = Console.ReadLine();
+            //    switch (filename)
+            //    {
+            //        case ("FruitDatabase.json"):
+            //            stay_in_while = false;
+            //            break;
+            //        case ("ShoeDatabase.json"):
+            //            stay_in_while = false;
+            //            break;
+            //        default:
+            //            Console.WriteLine("Sorry, this database doesnt exit. Try again");
+            //            break;
+            //    }
+            //}
+            map.Inventory = JSONFile.GetProducts("FruitDatabase.json");
+            map.PopulateShelves();
+            JSONFile.ConvertProductToJSON(map.Inventory, "FruitDatabase.json");
+            return "FruitDatabase.json";
+        }
     }
 }

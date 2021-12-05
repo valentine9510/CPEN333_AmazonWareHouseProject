@@ -20,8 +20,9 @@ namespace WarehouseComputer.Classes
         private Cell currCell;
         private List<Tuple<int, int>> route;
         public Order currOrder;
+        public Mutex robotmutex;
 
-        public Robot(int id, double maxWeight, double currWeight)
+        public Robot(int id, double maxWeight, double currWeight, Mutex mutex)
         {
             this.id = id;
             this.maxWeight = maxWeight;
@@ -30,6 +31,7 @@ namespace WarehouseComputer.Classes
             this.currCell = null;
             this.currOrder = null;
             this.route = new List<Tuple<int, int>>();
+            this.robotmutex = mutex;
         }
 
         public void SetRoute(List<Tuple<int, int>> route)
@@ -42,12 +44,15 @@ namespace WarehouseComputer.Classes
 
             while (true)
             {
-                if (Program.ReturnQueueCount() != 0)
+
+                // set robot status to fulfilling order
+                robotmutex.WaitOne();
+                bool readorder = GetOrder();
+                robotmutex.ReleaseMutex();
+                if (readorder == true)
                 {
-                    // set robot status to fulfilling order
-                    GetOrder();
                     List<Location> productlocations = new List<Location>();
-                    foreach(Product p in currOrder.Products)
+                    foreach (Product p in currOrder.Products)
                     {
                         productlocations.Add(p.Location);
                     }
@@ -57,15 +62,25 @@ namespace WarehouseComputer.Classes
             }
         }
 
-        public void GetOrder()
+        public bool GetOrder()
         {
-            Console.Write("Robot {0} starting route for : ", id);
-            this.currOrder = Program.TakeFromQueue();
-            foreach (Product p in currOrder.Products)
+            bool readsuccess = false;
+            if (Program.OrdersFromWebServer.Count != 0)
             {
-                Console.Write("{0} ", p.ProductName);
+                this.currOrder = Program.OrdersFromWebServer.Dequeue();
+                foreach (Product p in currOrder.Products)
+                {
+                    Console.Write("{0} ", p.ProductName);
+                }
+                Console.Write(".\n");
+                readsuccess = true;
+                return readsuccess;
             }
-            Console.Write(".\n");
+            else
+            {
+                readsuccess = false;
+                return readsuccess;
+            }
         }
 
 
