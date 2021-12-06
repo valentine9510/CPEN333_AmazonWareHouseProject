@@ -20,6 +20,7 @@ namespace WarehouseComputer
             Id = id;
             MaxWeight = max;
             CurrWeight = curr;
+            WeightMonitor = new object();
         }
 
         public void LeaveDock()

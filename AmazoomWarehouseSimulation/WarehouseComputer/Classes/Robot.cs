@@ -66,6 +66,7 @@ namespace WarehouseComputer.Classes
             {
                 if(Program.Docks.Count == 0)
                 {
+                    Console.WriteLine($"Robot {id} is waiting for trucks...");
                     Monitor.Wait(Program.Docks);
                 }
                 
@@ -129,8 +130,10 @@ namespace WarehouseComputer.Classes
             {
                 if(Program.WaitingOrders.Count == 0)
                 {
+                    Console.WriteLine($"Robot {id} is waiting for orders...");
                     Monitor.Wait(Program.WaitingOrders);
                 }
+                Console.WriteLine($"Robot {id} is awake!");
                 this.currOrder = Program.WaitingOrders.Dequeue();
             }
 

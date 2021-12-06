@@ -19,17 +19,16 @@ namespace WarehouseComputer
         public static WarehouseMap map;
         public static Process AmazoomWebServerProcess;
         public static string CurrentDatabaseName;
-        private static Queue<Robot> waitingRobots;
         public static Queue<Order> OrdersFromWebServer = new Queue<Order>();
-        public static Queue<Order> WaitingOrders;
-        private static Mutex mutex = new Mutex();
+        public static Queue<Order> WaitingOrders = new Queue<Order>();
+        //private static Mutex mutex = new Mutex();
 
 
-        public static Queue<Truck> WaitingTrucks;
-        public static List<Truck> Docks;
+        public static Queue<Truck> WaitingTrucks = new Queue<Truck>();
+        public static List<Truck> Docks = new List<Truck>();
         public static Location[] dockLocations;
-        public static int nDockedTrucks;
-        public static int NextTruck;
+        public static int nDockedTrucks = 0;
+        public static int NextTruck = 0;
 
         static void Main(string[] args)
         {
@@ -52,16 +51,28 @@ namespace WarehouseComputer
             Console.WriteLine(Program.OrdersFromWebServer.Count());
             Console.ReadKey();
             Order testorder = new Order(1);
-            testorder.AddProduct(map.Inventory[0]);
-            testorder.AddProduct(map.Inventory[1]);
-            robotmutex.WaitOne();
+            Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 0.20);
+            testorder.AddProduct(p);
+
+            //testorder.AddProduct(map.Inventory[0]);
+            //testorder.AddProduct(map.Inventory[1]);
+            //robotmutex.WaitOne();
+            /*OrdersFromWebServer.Enqueue(testorder);
             OrdersFromWebServer.Enqueue(testorder);
             OrdersFromWebServer.Enqueue(testorder);
             OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);
-            robotmutex.ReleaseMutex();
-             Console.ReadKey();
+            OrdersFromWebServer.Enqueue(testorder);*/
+            Thread.Sleep(1000);
+            AddOrder(testorder);
+            AddOrder(testorder);
+            AddOrder(testorder);
+            Thread.Sleep(1000);
+            Truck truck = new Truck(0, 10, 5);
+            AddTruck(truck);
+            truck = new Truck(1, 10, 5);
+            AddTruck(truck);
+            //robotmutex.ReleaseMutex();
+            Console.ReadKey();
 
             //Console.ReadKey();
             //foreach(Order order in OrdersFromWebServer)
@@ -71,7 +82,25 @@ namespace WarehouseComputer
 
         }
 
+        private static void AddOrder(Order order)
+        {
+            lock (WaitingOrders)
+            {
+                Console.WriteLine("Order added to the queue!");
+                WaitingOrders.Enqueue(order);
+                Monitor.Pulse(WaitingOrders);
+            }
+        }
 
+        private static void AddTruck(Truck truck)
+        {
+            lock (Docks)
+            {
+                Console.WriteLine("Truck added to the queue!");
+                Docks.Add(truck);
+                Monitor.PulseAll(Docks);
+            }
+        }
         //public static void AddToQueue(Order OrderedProduct)
         //{
         //    mutex.WaitOne();
