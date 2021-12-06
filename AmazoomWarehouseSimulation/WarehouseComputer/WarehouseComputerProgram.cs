@@ -48,6 +48,36 @@ namespace WarehouseComputer
                 t[threadnum].Start(); //should we join threads ?
             }
 
+
+            bool endConsole = false;
+            Manager bob = new Manager();
+            Console.WriteLine("Manager UI Interface\r");
+            Console.WriteLine("------------------------\n");
+            while (!endConsole)
+            {
+                Console.WriteLine("Choose an operator from the following list:");
+                Console.WriteLine("\t1 - Query Order Status");
+                Console.WriteLine("\t2 - Check # of Item in stock");
+                Console.WriteLine("\t3 - get alerted about low stock item");
+                Console.Write("Your option? ");
+
+                int operation = int.Parse(Console.ReadLine());
+
+                switch (operation)
+                {
+                    case 1:
+                        Console.WriteLine("Enter Order status ID");
+                        int orderStatusNum = int.Parse(Console.ReadLine());
+                        bob.getOrderStatus(orderStatusNum);
+                        break;
+                    case 2:
+                        Console.WriteLine("Write name of item to check stock");
+
+                        break;
+                }
+                Console.Write("Press 'n' and Enter to close the app, or press any other key and Enter to continue: ");
+                if (Console.ReadLine() == "n") endConsole = true;
+            }
             Console.WriteLine(Program.OrdersFromWebServer.Count());
             Console.ReadKey();
             Order testorder = new Order(1);

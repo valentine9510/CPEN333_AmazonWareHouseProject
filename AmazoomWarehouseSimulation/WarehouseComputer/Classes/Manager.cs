@@ -7,9 +7,17 @@ namespace WarehouseComputer.Classes
 {
     class Manager
     {
-        public void getOrderStatus(Order order)
+        public void getOrderStatus(int ID)
         {
-            switch(order.status_)
+            Order temp = new Order();
+            foreach(Order o in Program.OrdersFromWebServer)
+            {
+                if(o.OrderID == ID)
+                {
+                    temp = o;
+                }
+            }
+            switch(temp.status_)
             {
                 case Order.Status.NEW_ORDER: Console.WriteLine("NEW ORDER");
                 break;
