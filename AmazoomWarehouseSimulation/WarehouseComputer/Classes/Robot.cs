@@ -23,6 +23,7 @@ namespace WarehouseComputer.Classes
 
         private Location truckLocation;
         private Truck truck;
+        private bool alreadyTriedTruck;
         //public Mutex robotmutex;
 
         public Robot(int id, double maxWeight, double currWeight, Mutex mutex)
@@ -35,6 +36,7 @@ namespace WarehouseComputer.Classes
             this.currOrder = null;
             this.route = new List<Tuple<int, int>>();
             //this.robotmutex = mutex;
+            alreadyTriedTruck = false;
         }
 
         public void SetRoute(List<Tuple<int, int>> route)
@@ -77,33 +79,52 @@ namespace WarehouseComputer.Classes
                 else
                 {
                     truck = Program.Docks[Program.NextTruck];
+                    //Console.WriteLine($"Next truck picked is {Program.NextTruck}.");
                     Program.NextTruck = (Program.NextTruck + 1) % 2;
                 }
                 
             }
 
             Monitor.Enter(truck.WeightMonitor);
-            if (truck.ReservedWeight + this.currOrder.OrderWeight > truck.MaxWeight)
+
+            //If a truck's reserved weight is too big for an order, this truck should leave
+            //Or if this truck is already set to leave, the robot should not try to fill it more
+            if (truck.ReservedWeight + this.currOrder.OrderWeight > truck.MaxWeight || truck.ReadyToLeave)
             {
+                truck.ReadyToLeave = true;
                 Monitor.Exit(truck.WeightMonitor);
-                truck.LeaveDock();
+
+                //if there is another truck at the dock, the robot will try with this one, otherwise it will wait.
                 lock (Program.Docks)
                 {
-                    Program.Docks.Remove(truck);
-                }
-                lock (Program.WaitingTrucks)
-                {
-                    if (Program.WaitingTrucks.Count > 0)
+                    if(Program.Docks.Count == 2)
                     {
-                        Truck newTruck = Program.WaitingTrucks.Dequeue();
-                        Program.Docks.Add(newTruck);
-                        lock (Program.Docks)
+                        if (alreadyTriedTruck)
                         {
-                            newTruck.Dock = Program.Docks.Count;
+                            Console.WriteLine($"Robot {id} is waiting for trucks because all trucks are reserved...");
+                            Monitor.Wait(Program.Docks);
+                            alreadyTriedTruck = false;
+                            GetAvailableTruck(); //the robot should start again if it was sleeping
+                            return;
                         }
+                        else
+                        {
+                            //Console.WriteLine($"Robot {id} will try another truck!");
+                            alreadyTriedTruck = true;
+                            GetAvailableTruck();
+                            return;
+                        }
+                        
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Robot {id} is waiting for trucks because all trucks are reserved (2)...");
+                        Monitor.Wait(Program.Docks);
+                        GetAvailableTruck(); //the robot should start again if it was sleeping
+                        return;
                     }
                 }
-                GetAvailableTruck();
+
             }
             else
             {
@@ -116,11 +137,13 @@ namespace WarehouseComputer.Classes
                     this.truckLocation = new Location(2, Program.map.NRow - 1, 0, 0);
                 }
                 truck.ReservedWeight += currOrder.OrderWeight;
+                Console.WriteLine($"Truck {truck.Id} has {truck.ReservedWeight}kg reserved.");
                 Monitor.Exit(truck.WeightMonitor);
 
             }
             this.truck = truck;
-
+            alreadyTriedTruck = false;
+            Console.WriteLine($"Robot {id} picked truck {truck.Id}.");
         }
 
 
@@ -133,24 +156,24 @@ namespace WarehouseComputer.Classes
                     Console.WriteLine($"Robot {id} is waiting for orders...");
                     Monitor.Wait(Program.WaitingOrders);
                 }
-                Console.WriteLine($"Robot {id} is awake!");
+                //Console.WriteLine($"Robot {id} is awake!");
                 this.currOrder = Program.WaitingOrders.Dequeue();
             }
 
-            Console.Write("Robot {0} starting route for : ", id);
+            /*Console.Write("Robot {0} starting route for : ", id);
 
             foreach (Product p in currOrder.Products)
             {
                 Console.Write($"{p.ProductName} ");
             }
-            Console.Write(".\n");
+            Console.Write(".\n");*/
         }
 
 
         private void ExecRoute()
         {
 
-            Console.WriteLine("Robot {0} is starting a new route !", this.id);
+            //Console.WriteLine("Robot {0} is starting a new route !", this.id);
             foreach (var nextLocation in this.route)
             {
                 Cell nextCell = Program.map.GetCell(nextLocation.Item2, nextLocation.Item1); //Find route impl. with x-y, getCoord with row-col
@@ -159,7 +182,7 @@ namespace WarehouseComputer.Classes
 
                 if(currCell != null)
                 {
-                    Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
+                    //Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
                     Monitor.Exit(this.currCell);
                 }
                 this.currCell = nextCell;
@@ -185,7 +208,7 @@ namespace WarehouseComputer.Classes
             this.currWeight = 0;
             Monitor.Exit(this.currCell); //gets to the hangar --> frees last cell
             this.currCell = null;
-            Console.WriteLine("Robot {0} joined the hangar.", id);
+            //Console.WriteLine("Robot {0} joined the hangar.", id);
 
             Order orderDone = this.currOrder;
             this.currOrder = null;
@@ -197,16 +220,47 @@ namespace WarehouseComputer.Classes
         {
             foreach (var product in currOrder.Products)
             {
-                Console.WriteLine($"Loading truck {truck.Id} with {product.ProductName}.");
+                //Console.WriteLine($"Loading truck {truck.Id} with {product.ProductName}.");
                 Thread.Sleep(1500); //simulates loading truck
                 lock (truck.WeightMonitor)
                 {
                     truck.CurrWeight += currOrder.OrderWeight;
-                    Console.WriteLine($"Truck {truck.Id} contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
+                    Console.WriteLine($"Robot {id}loaded truck {truck.Id}, it now contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
+                    if(truck.CurrWeight == truck.ReservedWeight && truck.ReadyToLeave)
+                    {
+                        TellTruckToLeave();
+                    }
                 }
                 
             }
-            Console.WriteLine($"Truck {truck.Id} loaded !");
+            //Console.WriteLine($"Truck {truck.Id} loaded !");
+            this.truck = null;
+        }
+
+        private void TellTruckToLeave()
+        {
+            /**
+             * Whole critical section synchronized on Docks, because we don't want to have inconsistent Docks-WaitingTrucks results
+             * Ex. : If a robot tells a truck to leave and removes it from the dock while another truck was arriving at the warehouse,
+             * then the program could have added the new truck to the dock (because a spot was free), but then when the robot tries to
+             * dequeue another truck and add it to the dock as well, the spots will be filled. 
+             * Hence, we need to lock both Docks and the WaitingTrucks queue together.
+             */
+            lock (Program.Docks)
+            {
+                Program.Docks.Remove(truck);
+                lock (truck.WaitingObj)
+                {
+                    Monitor.Pulse(truck.WaitingObj);
+                }
+                if (Program.WaitingTrucks.Count > 0)
+                {
+                    Truck newTruck = Program.WaitingTrucks.Dequeue();
+                    newTruck.Dock = Program.Docks.Count;
+                    Program.Docks.Add(newTruck);
+                    Console.WriteLine($"Truck {newTruck.Id} is waiting at dock {Program.Docks.Count - 1}");
+                }
+            }
         }
 
         public Cell GetCurrCell()
@@ -218,18 +272,11 @@ namespace WarehouseComputer.Classes
         {
             //update weight
             this.currWeight += p.Weight;
-            Console.WriteLine("Fetching {0}...", p.ProductName);
+            Console.WriteLine($"Robot {id} fetching {p.ProductName}...");
             Thread.Sleep(1500);
-            Console.WriteLine("{0} fetched !", p.ProductName);
+            //Console.WriteLine("{0} fetched !", p.ProductName);
         }
 
-        private void PlaceOrderInTruck(Truck truck)
-        {
-            if(truck.CurrWeight + currOrder.OrderWeight > truck.MaxWeight)
-            {
-                truck.LeaveDock();
-            }
-        }
 
         private static List<Tuple<int, int>> FindRoute(List<Location> locations)
         {

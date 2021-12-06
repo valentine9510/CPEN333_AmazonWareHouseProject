@@ -25,16 +25,15 @@ namespace WarehouseComputer
 
 
         public static Queue<Truck> WaitingTrucks = new Queue<Truck>();
-        public static List<Truck> Docks = new List<Truck>();
+        public static List<Truck> Docks = new List<Truck>(); //used for whole sync
         public static Location[] dockLocations;
-        public static int nDockedTrucks = 0;
         public static int NextTruck = 0;
 
         static void Main(string[] args)
         {
             map = WarehouseComputerStartup.InitWarehouseMap(true);
-            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
-            AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
+            //CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
+            //AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
 
             Robot[] r = new Robot[5];
             Thread[] t = new Thread[5];
@@ -48,10 +47,10 @@ namespace WarehouseComputer
                 t[threadnum].Start(); //should we join threads ?
             }
 
-            Console.WriteLine(Program.OrdersFromWebServer.Count());
-            Console.ReadKey();
+            //Console.WriteLine(Program.OrdersFromWebServer.Count());
+            //Console.ReadKey();
             Order testorder = new Order(1);
-            Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 0.20);
+            Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 1.5);
             testorder.AddProduct(p);
 
             //testorder.AddProduct(map.Inventory[0]);
@@ -63,14 +62,22 @@ namespace WarehouseComputer
             OrdersFromWebServer.Enqueue(testorder);
             OrdersFromWebServer.Enqueue(testorder);*/
             Thread.Sleep(1000);
-            AddOrder(testorder);
-            AddOrder(testorder);
-            AddOrder(testorder);
+            for (int i = 0; i < 20; i++)
+            {
+                AddOrder(testorder);
+            }
             Thread.Sleep(1000);
-            Truck truck = new Truck(0, 10, 5);
-            AddTruck(truck);
-            truck = new Truck(1, 10, 5);
-            AddTruck(truck);
+
+            List<Truck> trucks = new List<Truck>();
+            List<Thread> truckThreads = new List<Thread>();
+            for (int i = 0; i < 3; i++)
+            {
+                Thread.Sleep(5000);
+                trucks.Add(new Truck(i, 5, 0));
+                int threadnum = i;
+                truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
+                truckThreads[i].Start();
+            }
             //robotmutex.ReleaseMutex();
             Console.ReadKey();
 
@@ -86,21 +93,30 @@ namespace WarehouseComputer
         {
             lock (WaitingOrders)
             {
-                Console.WriteLine("Order added to the queue!");
+                //Console.WriteLine("Order added to the queue!");
                 WaitingOrders.Enqueue(order);
                 Monitor.Pulse(WaitingOrders);
             }
         }
 
-        private static void AddTruck(Truck truck)
+        public static void AddTruck(Truck truck)
         {
             lock (Docks)
             {
-                Console.WriteLine("Truck added to the queue!");
-                Docks.Add(truck);
-                Monitor.PulseAll(Docks);
+                if (Docks.Count < 2)
+                {
+                    Docks.Add(truck);
+                    Console.WriteLine($"Truck {truck.Id} is waiting at dock {Docks.Count - 1}");
+                    Monitor.PulseAll(Docks);
+                }
+                else
+                {
+                    WaitingTrucks.Enqueue(truck);
+                    Console.WriteLine($"Truck {truck.Id} is queuing up...");
+                }
             }
         }
+
         //public static void AddToQueue(Order OrderedProduct)
         //{
         //    mutex.WaitOne();
