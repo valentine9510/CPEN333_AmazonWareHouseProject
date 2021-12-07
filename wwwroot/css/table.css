@@ -1,0 +1,182 @@
+﻿table {
+    width: 750px;
+    border-collapse: collapse;
+    margin: 50px auto;
+    text-align: center;
+}
+
+/* Zebra striping */
+tr:nth-of-type(odd) {
+    background: #eee;
+}
+
+th {
+    background: #3498db;
+    color: white;
+    font-weight: bold;
+}
+
+td, th {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+
+    table {
+        width: 100%;
+    }
+
+    /* Force table to not be like tables anymore */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+    tr {
+        border: 1px solid #ccc;
+    }
+
+    td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+    }
+
+        td:before {
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            /* Label the data */
+            content: attr(data-column);
+            color: #000;
+            font-weight: bold;
+        }
+}
+
+/* Drop down items */
+.dropdown {
+    color: black;
+    font: normal 1em 'Playfair Display SC', serif;
+    position: relative;
+    display: inline;
+}
+
+.dropdown_custom {
+    background-color: #222831;
+    height: 80px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.dropdown-label {
+    background-color: transparent;
+    border: none;
+    text-decoration: none;
+    font-size: 1.5em;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.dropdown-items {
+    position: absolute;
+    opacity: 0;
+    background-color: palegreen;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    width: 200px;
+    margin-top: 0.5rem;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: all 0.2s ease-in-out;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    font-size: 1em;
+    text-align: left;
+    padding: 0.7rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.dropdown_custom:focus-within .dropdown-items,
+.dropdown_custom:hover .dropdown-items {
+    opacity: 1;
+    transform: scale(1);
+}
+.dropdown:focus-within .dropdown-items,
+.dropdown:hover .dropdown-items {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.dropdown-label:focus-visible {
+    text-decoration: underline;
+}
+
+.dropdown-label:focus-visible,
+.dropdown-item:focus-visible {
+    outline: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f1faee;
+}
+
+.dropdown-item:focus-visible {
+    background-color: #f1faee;
+}
+
+.button4 {
+    color: white;
+    align-content: center;
+    margin: 10px;
+    margin-left: 35px;
+    box-shadow: inherit;
+    border-radius: 1.5em;
+    display: inline-block;
+    padding: 0.3em 1.2em;
+    transition: all 0.2s;
+}
+
+    .button4:hover {
+        border-color: rgba(255,255,255,1);
+    }
+
+@media all and (max-width:30em) {
+      .button4 {
+        display: block;
+        margin: 0.2em auto;
+    }
+}
+
+
