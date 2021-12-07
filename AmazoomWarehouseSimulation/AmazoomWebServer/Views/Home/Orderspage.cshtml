@@ -5,7 +5,8 @@
 }
 <head>
     <title>Orderspage</title>
-    <link href="~/css/table.css" rel="stylesheet" />
+    @*<link href="~/css/table.css" rel="stylesheet" />*@
+    <link href="https://valentine9510.github.io/CPEN333_AmazonWareHouseProject/docs/css/table.css" rel="stylesheet" />
 
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
@@ -14,8 +15,10 @@
 
 <body>
     <p style="text-align:center; font: normal 3em 'Playfair Display SC', serif; padding-bottom:0.3em"><strong>Inventory</strong></p>
-    <link href="~/css/table.css" rel="stylesheet" />
-    <link href="~/css/cards.css" rel="stylesheet" />
+    @*<link href="~/css/table.css" rel="stylesheet" />
+        <link href="~/css/cards.css" rel="stylesheet" />*@
+    <link href="https://valentine9510.github.io/CPEN333_AmazonWareHouseProject/docs/css/table.css" rel="stylesheet" />
+    <link href="https://valentine9510.github.io/CPEN333_AmazonWareHouseProject/docs/css/cards.css" rel="stylesheet" />
 
     <div class="container_card">
         <div class="card; dropdown_custom" style="background-color:lightgray">
@@ -36,9 +39,9 @@
                                 border-radius: 1.5em;
                                 display: inline-block;
                                 padding: 0.3em 1.2em;"
-                                onclick="displayConfirmation()" />
+                                   onclick="displayConfirmation()" />
 
-                            
+
                         }
                         @using (Html.BeginForm("ClearOrder", "Home")) //Clear order button
                         {
@@ -50,9 +53,8 @@
                                 box-shadow:inherit;
                                 border-radius: 1.5em;
                                 display: inline-block;
-                                padding: 0.3em 1.2em;" 
-                                   onclick="displayCancellation()"
-                                   />
+                                padding: 0.3em 1.2em;"
+                                   onclick="displayCancellation()" />
                         }
                         <table class="dropdown-item" style="font-size: 1em;">
                             <thead>
@@ -89,7 +91,7 @@
                     <div class="dropdown-items" style="background-color:lightpink">
                         @using (Html.BeginForm("ClearsOrdersInProgress", "Home")) //Submit order button
                         {
-                            <input type="submit" value="Clear queued orders" style="background-color:red; 
+                            <input type="submit" value="Clear queued orders" style="background-color:red;
                                 color: white;
                                 align-content: center;
                                 margin: 10px;
@@ -201,14 +203,14 @@
             <tr>
                 @using (Html.BeginForm("AddToInventory", "Home", FormMethod.Post))
                 {
-                <td data-column="Product">
-                    <input type="text" name="newProductName" id="newProductName">
-                    <p><strong>Input name</strong></p>
-                </td>
-                <td data-column="Quantity Available">
-                    <input type="text" name="newProductQty" id="newProductQty">
-                    <p><strong>Input quantity</strong> </p>
-                </td>
+                    <td data-column="Product">
+                        <input type="text" name="newProductName" id="newProductName">
+                        <p><strong>Input name</strong></p>
+                    </td>
+                    <td data-column="Quantity Available">
+                        <input type="text" name="newProductQty" id="newProductQty">
+                        <p><strong>Input quantity</strong> </p>
+                    </td>
                     <td data-column="Add to order">
                         <input type="submit" value="Add to Inventory" style="background-color:darkblue; color:white; border-radius:0.5em" />
                     </td>
