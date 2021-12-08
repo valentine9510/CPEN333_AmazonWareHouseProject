@@ -156,38 +156,28 @@ namespace WarehouseComputer.Classes
                     Console.WriteLine($"Robot {id} is waiting for orders...");
                     Monitor.Wait(Program.WaitingOrders);
                 }
-                //Console.WriteLine($"Robot {id} is awake!");
                 this.currOrder = Program.WaitingOrders.Dequeue();
             }
 
-            /*Console.Write("Robot {0} starting route for : ", id);
-
-            foreach (Product p in currOrder.Products)
-            {
-                Console.Write($"{p.ProductName} ");
-            }
-            Console.Write(".\n");*/
         }
 
 
         private void ExecRoute()
         {
 
-            //Console.WriteLine("Robot {0} is starting a new route !", this.id);
             foreach (var nextLocation in this.route)
             {
-                Cell nextCell = Program.map.GetCell(nextLocation.Item2, nextLocation.Item1); //Find route impl. with x-y, getCoord with row-col
+                Cell nextCell = Program.map.GetCell(nextLocation.Item2, nextLocation.Item1);
 
                 Monitor.Enter(nextCell);
 
                 if(currCell != null)
                 {
-                    //Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
+                    Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
                     Monitor.Exit(this.currCell);
                 }
                 this.currCell = nextCell;
 
-                //ideally: sort items in Order per location, so that location check doesn't take too much time
                 foreach (var product in currOrder.Products)
                 {
                     if(product.Location.x == this.currCell.x &&
@@ -208,24 +198,21 @@ namespace WarehouseComputer.Classes
             this.currWeight = 0;
             Monitor.Exit(this.currCell); //gets to the hangar --> frees last cell
             this.currCell = null;
-            //Console.WriteLine("Robot {0} joined the hangar.", id);
 
             Order orderDone = this.currOrder;
             this.currOrder = null;
             this.route = null;
-            //set status to waiting again
         }
 
         public void LoadTruck()
         {
             foreach (var product in currOrder.Products)
             {
-                //Console.WriteLine($"Loading truck {truck.Id} with {product.ProductName}.");
                 Thread.Sleep(1500); //simulates loading truck
                 lock (truck.WeightMonitor)
                 {
                     truck.CurrWeight += currOrder.OrderWeight;
-                    Console.WriteLine($"Robot {id}loaded truck {truck.Id}, it now contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
+                    Console.WriteLine($"Robot {id} loaded truck {truck.Id} with {product.ProductName}, it now contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
                     if(truck.CurrWeight == truck.ReservedWeight && truck.ReadyToLeave)
                     {
                         TellTruckToLeave();
@@ -233,7 +220,6 @@ namespace WarehouseComputer.Classes
                 }
                 
             }
-            //Console.WriteLine($"Truck {truck.Id} loaded !");
             this.truck = null;
         }
 
@@ -258,7 +244,7 @@ namespace WarehouseComputer.Classes
                     Truck newTruck = Program.WaitingTrucks.Dequeue();
                     newTruck.Dock = Program.Docks.Count;
                     Program.Docks.Add(newTruck);
-                    Console.WriteLine($"Truck {newTruck.Id} is waiting at dock {Program.Docks.Count - 1}");
+                    Console.WriteLine($"Truck {newTruck.Id} is waiting at dock {Program.Docks.Count - 1}.");
                 }
             }
         }
@@ -274,13 +260,13 @@ namespace WarehouseComputer.Classes
             this.currWeight += p.Weight;
             Console.WriteLine($"Robot {id} fetching {p.ProductName}...");
             Thread.Sleep(1500);
-            //Console.WriteLine("{0} fetched !", p.ProductName);
         }
 
 
         private static List<Tuple<int, int>> FindRoute(List<Location> locations)
         {
             List<Tuple<int, int>> route = new List<Tuple<int, int>>();
+            //the Location class implements the IComparable interface in order to sort the locations
             locations.Sort();
 
             /**
@@ -288,11 +274,11 @@ namespace WarehouseComputer.Classes
              * Assumption : Robots are waiting in a hangar
              */
 
-            //get to A-up-5
+            //get to A, bottom
             route.Add(new Tuple<int, int>(0, Program.map.NRow - 1));
             route.Add(new Tuple<int, int>(1, Program.map.NRow - 1));
 
-            //move on A up
+            //move on A upwards
             for (int i = Program.map.NRow; i > 0; i--)
             {
                 route.Add(new Tuple<int, int>(1, i - 1));
@@ -300,7 +286,7 @@ namespace WarehouseComputer.Classes
 
 
             /**
-             * Step 2 : Get to each location
+             * Step 2 : Get to each order product's location (the locations are sorted)
              */
             int currCol = 1;
             int currRow = 0; //we start at A1
@@ -310,10 +296,10 @@ namespace WarehouseComputer.Classes
                 //items on A aisle are already collected while going to A1
                 if (loc.x != 1)
                 {
-                    //if we have to switch columns --> get to right column
+                    //if we have to switch columns --> get to the right column
                     if (loc.x > currCol)
                     {
-                        //if we're not on row 1 --> we were on down aisle
+                        //if we're not on row 1 --> we were on down aisle, so we have to get back to the top row
                         if (currRow != 0)
                         {
                             route.Add(new Tuple<int, int>(++currCol, currRow)); //move on up aisle
@@ -357,7 +343,7 @@ namespace WarehouseComputer.Classes
                 currRow = 0;
                 for (int i = currCol; i < Program.map.NCol - 1; i++)
                 {
-                    route.Add(new Tuple<int, int>(i + 1, currRow));
+                    route.Add(new Tuple<int, int>(i + 1, currRow)); //get to last column
                 }
             }
             currCol = Program.map.NCol - 1;
@@ -367,13 +353,6 @@ namespace WarehouseComputer.Classes
                 route.Add(new Tuple<int, int>(currCol, i + 1));
             }
             currRow = Program.map.NRow - 1;
-
-            //for now : truck at H5, later : truck.location.x
-            for (int i = currCol; i > 5 * 2 - 1; i--)
-            {
-                route.Add(new Tuple<int, int>(i - 1, currRow));
-            }
-            currCol = 5 * 2 - 1;
 
             /**
              * Step 4 : Go back to hangar

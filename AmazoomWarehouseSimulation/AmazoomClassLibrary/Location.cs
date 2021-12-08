@@ -39,7 +39,7 @@ namespace AmazoomClassLibrary
                 return 1;
             }
 
-            return 1; //we just need to sort them in whatever order of same row + column
+            return 1;
         }
 
         public override string ToString()
