@@ -90,7 +90,7 @@ namespace AmazoomWebServer.Controllers
                 ProductInventory.currentOrder = new Order(ProductInventory.currentOrder.OrderID + 1);
 
                 /* Update database */
-                JSONFile.ConvertProductToJSON(ProductInventory.availableProducts, "C:\\Users\\hp\\Source\\Repos\\CPEN333_AmazonWareHouseProject\\AmazoomWarehouseSimulation\\FruitDatabase.json");
+                JSONFile.ConvertProductToJSON(ProductInventory.availableProducts, "FruitDatabase.json");
             }
 
             /* Update uncompleted orders from Global queue */

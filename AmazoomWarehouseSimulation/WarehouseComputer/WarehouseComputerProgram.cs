@@ -32,8 +32,8 @@ namespace WarehouseComputer
         static void Main(string[] args)
         {
             map = WarehouseComputerStartup.InitWarehouseMap(true);
-            //CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
-            //AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
+            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
+            AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
 
             Robot[] r = new Robot[5];
             Thread[] t = new Thread[5];
@@ -46,40 +46,43 @@ namespace WarehouseComputer
                 t[threadnum] = new Thread(() => r[threadnum].Execute());
                 t[threadnum].Start(); //should we join threads ?
             }
+            while (true)
+            {
+                Console.WriteLine(Program.OrdersFromWebServer.Count());
+                Console.ReadKey();
+            }
+            
+            //Order testorder = new Order(1);
+            //Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 1.5);
+            //testorder.AddProduct(p);
 
-            //Console.WriteLine(Program.OrdersFromWebServer.Count());
+            ////testorder.AddProduct(map.Inventory[0]);
+            ////testorder.AddProduct(map.Inventory[1]);
+            ////robotmutex.WaitOne();
+            ///*OrdersFromWebServer.Enqueue(testorder);
+            //OrdersFromWebServer.Enqueue(testorder);
+            //OrdersFromWebServer.Enqueue(testorder);
+            //OrdersFromWebServer.Enqueue(testorder);
+            //OrdersFromWebServer.Enqueue(testorder);*/
+            //Thread.Sleep(1000);
+            //for (int i = 0; i < 20; i++)
+            //{
+            //    AddOrder(testorder);
+            //}
+            //Thread.Sleep(1000);
+
+            //List<Truck> trucks = new List<Truck>();
+            //List<Thread> truckThreads = new List<Thread>();
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    Thread.Sleep(5000);
+            //    trucks.Add(new Truck(i, 5, 0));
+            //    int threadnum = i;
+            //    truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
+            //    truckThreads[i].Start();
+            //}
+            ////robotmutex.ReleaseMutex();
             //Console.ReadKey();
-            Order testorder = new Order(1);
-            Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 1.5);
-            testorder.AddProduct(p);
-
-            //testorder.AddProduct(map.Inventory[0]);
-            //testorder.AddProduct(map.Inventory[1]);
-            //robotmutex.WaitOne();
-            /*OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);
-            OrdersFromWebServer.Enqueue(testorder);*/
-            Thread.Sleep(1000);
-            for (int i = 0; i < 20; i++)
-            {
-                AddOrder(testorder);
-            }
-            Thread.Sleep(1000);
-
-            List<Truck> trucks = new List<Truck>();
-            List<Thread> truckThreads = new List<Thread>();
-            for (int i = 0; i < 3; i++)
-            {
-                Thread.Sleep(5000);
-                trucks.Add(new Truck(i, 5, 0));
-                int threadnum = i;
-                truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
-                truckThreads[i].Start();
-            }
-            //robotmutex.ReleaseMutex();
-            Console.ReadKey();
 
             //Console.ReadKey();
             //foreach(Order order in OrdersFromWebServer)
