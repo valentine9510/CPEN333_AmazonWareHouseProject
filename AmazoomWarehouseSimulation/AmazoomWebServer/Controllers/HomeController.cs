@@ -34,7 +34,7 @@ namespace AmazoomWebServer.Controllers
         public IActionResult Orderspage()
         {
             /* Update uncompleted orders from Global queue */
-            ProductInventory.uncompletedOrders = Globals.OrderQueue;
+            ProductInventory.uncompletedOrders = Globals.OrderQueue;            
 
             return View(tempInventory);
         }
@@ -87,7 +87,6 @@ namespace AmazoomWebServer.Controllers
             {
                 Order tempOrder = ProductInventory.currentOrder;
                 //ProductInventory.uncompletedOrders.Enqueue(tempOrder);
-                //Globals.OrderQueue.Enqueue(tempOrder);
                 Globals.AddToQueue(tempOrder);
 
                 /* Reset order, add one to ID for next Order */

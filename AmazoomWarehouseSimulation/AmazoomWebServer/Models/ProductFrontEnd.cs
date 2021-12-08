@@ -39,11 +39,16 @@ namespace AmazoomWebServer.Models
 
         public ProductInventory()
         {
-            //availableProducts = new List<Product>();
-            availableProducts = JSONFile.GetProducts("FruitDatabase.json");
+            //availableProducts = new List<Product>(); //C:\Users\hp\source\repos\CPEN333_AmazonWareHouseProject\AmazoomWarehouseSimulation\FruitDatabase.json
+            availableProducts = JSONFile.GetProducts("FruitDatabase.json"); //FruitDatabase.json
             uncompletedOrders = new Queue<Order>();
             completedOrders = new Queue<Order>();
             currentOrder = new Order(1);
+            currentOrder.AddProduct(availableProducts[0]);
+            List<Order> tempList = new List<Order>();
+            tempList.Add(currentOrder);
+            //JSONFile.ConvertOrderToJSON(tempList);
+            //JSONFile.AddOrderToJSONDatabase(currentOrder);
             this.currentAlert = new Alert(false, "");
             //this.LoadRandomObjects();
         }
@@ -129,6 +134,11 @@ namespace AmazoomWebServer.Models
             this.currentAlert.alertMessage = "";
             this.currentAlert.showAlert = false;
             return "";
+        }
+
+        public List<Order> getCompletedOrdersList()
+        {
+            return JSONFile.GetOrders();
         }
 
     }

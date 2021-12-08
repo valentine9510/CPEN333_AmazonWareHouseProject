@@ -20,10 +20,10 @@ namespace AmazoomWebServer
     {
         public static void Main(string[] args)
         {
-            string PipeHandle = args[0];
-            ServerCommThread ThreadInstance = new ServerCommThread(PipeHandle);
-            Thread SendOrders = new Thread(new ThreadStart(ThreadInstance.Execute));
-            SendOrders.Start();
+            //string PipeHandle = args[0];
+            //ServerCommThread ThreadInstance = new ServerCommThread(PipeHandle);
+            //Thread SendOrders = new Thread(new ThreadStart(ThreadInstance.Execute));
+            //SendOrders.Start();
             /* Sample */
 
             CreateHostBuilder(args).Build().Run();
