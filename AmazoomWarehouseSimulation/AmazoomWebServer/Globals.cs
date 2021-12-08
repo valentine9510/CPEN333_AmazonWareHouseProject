@@ -14,7 +14,7 @@ namespace AmazoomWebServer
 
         public static Queue<Order> OrderQueue = new Queue<Order>();
 
-        public static int OrderIDCounter;
+        public static string DatabaseName;
 
         private static Mutex mutex = new Mutex();
 

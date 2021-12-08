@@ -1,1 +1,0 @@
-[{"OrderID":1,"Products":[{"ProductName":"Apple","NumOfProduct":54,"Weight":0.0,"Location":{"x":6,"y":6,"leftOrRight":1,"shelf":1}}],"status_":0,"OrderWeight":0.0},{"OrderID":1,"Products":[{"ProductName":"Apple","NumOfProduct":54,"Weight":0.0,"Location":{"x":2,"y":10,"leftOrRight":1,"shelf":2}}],"status_":0,"OrderWeight":0.0}]

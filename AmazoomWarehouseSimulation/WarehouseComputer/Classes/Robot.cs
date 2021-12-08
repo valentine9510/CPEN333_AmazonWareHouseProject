@@ -53,7 +53,7 @@ namespace WarehouseComputer.Classes
                 foreach (Product p in currOrder.Products)
                 {
                     productlocations.Add(p.Location);
-                    Console.WriteLine(p.Location);
+                    Console.WriteLine($"{p.ProductName}, at location {p.Location}.");
                 }
                 this.route = FindRoute(productlocations);
                 ExecRoute();
@@ -175,7 +175,7 @@ namespace WarehouseComputer.Classes
 
                 if(currCell != null)
                 {
-                    Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
+                    //Console.WriteLine("Robot {0} moved from cell {1}, {2} to cell {3}, {4}.", id, currCell.x, currCell.y, nextCell.x, nextCell.y);
                     Monitor.Exit(this.currCell);
                 }
                 this.currCell = nextCell;
@@ -202,6 +202,7 @@ namespace WarehouseComputer.Classes
             this.currCell = null;
 
             Order orderDone = this.currOrder;
+            JSONFile.AddOrderToJSONDatabase(orderDone);
             this.currOrder = null;
             this.route = null;
         }
@@ -213,7 +214,7 @@ namespace WarehouseComputer.Classes
                 Thread.Sleep(1500); //simulates loading truck
                 lock (truck.WeightMonitor)
                 {
-                    truck.CurrWeight += currOrder.OrderWeight;
+                    truck.CurrWeight += product.Weight*product.NumOfProduct;
                     Console.WriteLine($"Robot {id} loaded truck {truck.Id} with {product.ProductName}, it now contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
                     if(truck.CurrWeight == truck.ReservedWeight && truck.ReadyToLeave || truck.CurrWeight == truck.MaxWeight)
                     {

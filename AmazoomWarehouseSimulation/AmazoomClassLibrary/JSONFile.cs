@@ -65,5 +65,12 @@ namespace AmazoomClassLibrary
             
         }
 
+        public static void ClearJSONFile(string filename = "CompletedOrders.json")
+        {
+            string startupPath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            string json = "";
+            File.WriteAllText(Path.Combine(startupPath, filename), json);
+        }
+
     }
 }

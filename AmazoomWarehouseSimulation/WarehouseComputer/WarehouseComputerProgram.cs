@@ -19,7 +19,6 @@ namespace WarehouseComputer
         public static WarehouseMap map;
         public static Process AmazoomWebServerProcess;
         public static string CurrentDatabaseName;
-        public static Queue<Order> OrdersFromWebServer = new Queue<Order>();
         public static Queue<Order> WaitingOrders = new Queue<Order>();
         //private static Mutex mutex = new Mutex();
 
@@ -31,11 +30,11 @@ namespace WarehouseComputer
 
         static void Main(string[] args)
         {
-            map = WarehouseComputerStartup.InitWarehouseMap(true);
-            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
-            AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
+            map = WarehouseComputerStartup.InitWarehouseMap();
+            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map);
+            AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe(CurrentDatabaseName);
 
-            int RobotNum = 5;
+            int RobotNum = 3;
             int truckNum = 3;
             Robot[] r = new Robot[RobotNum];
             Thread[] t = new Thread[RobotNum];
@@ -47,30 +46,22 @@ namespace WarehouseComputer
                 t[threadnum] = new Thread(() => r[threadnum].Execute());
                 t[threadnum].Start(); //should we join threads ?
             }
-            
-            //Order testorder = new Order(1);
-            //Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 1.5);
-            //testorder.AddProduct(p);
-
-            
-            //Thread.Sleep(1000);
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    AddOrder(testorder);
-            //}
-            //Thread.Sleep(1000);
 
             List<Truck> trucks = new List<Truck>();
             List<Thread> truckThreads = new List<Thread>();
             for (int i = 0; i < truckNum; i++)
             {
-                Thread.Sleep(5000);
+                //Thread.Sleep(5000);
                 trucks.Add(new Truck(i, 5, 0));
                 int threadnum = i;
                 truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
                 truckThreads[i].Start();
             }
 
+            Console.ReadKey();
+            JSONFile.ClearJSONFile();
+            Console.WriteLine("[WH COMPUTER] Killing Web Server");
+            AmazoomWebServerProcess.Kill();
             
         }
 

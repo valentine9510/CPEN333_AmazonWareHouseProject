@@ -12,21 +12,21 @@ namespace WarehouseComputer
 {
     public static class WarehouseComputerStartup
     {
-        public static Process InitWebServerProcessAndPipe()
+        public static Process InitWebServerProcessAndPipe(string filename = "FruitDatabase.json")
         {
             Process ProcessInstance = new Process();
             ProcessInstance.StartInfo.UseShellExecute = false;
             string startupPath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
             string fullPath = Path.Combine(startupPath, "AmazoomWebServer/bin/Debug/netcoreapp3.1/AmazoomWebServer.exe");
             ProcessInstance.StartInfo.FileName = fullPath;
-            ProcessInstance.StartInfo.CreateNoWindow = false;
+            ProcessInstance.StartInfo.CreateNoWindow = true;
 
             AnonymousPipeServerStream Pipe = new AnonymousPipeServerStream(PipeDirection.In, System.IO.HandleInheritability.Inheritable);
-            ProcessInstance.StartInfo.Arguments = Pipe.GetClientHandleAsString();
+            ProcessInstance.StartInfo.Arguments = Pipe.GetClientHandleAsString() + " " + filename;
             ProcessInstance.Start();
             Console.WriteLine("[WH COMPUTER] Web Server process started \n");
             Pipe.DisposeLocalCopyOfClientHandle();
-            Thread ReadOrder = new Thread(() => WarehouseComputerCommThread.Execute(Pipe, Program.OrdersFromWebServer));
+            Thread ReadOrder = new Thread(() => WarehouseComputerCommThread.Execute(Pipe));
             ReadOrder.Start();
             return ProcessInstance;
         }
