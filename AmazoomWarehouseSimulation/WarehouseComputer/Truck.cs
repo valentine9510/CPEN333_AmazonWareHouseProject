@@ -15,8 +15,8 @@ namespace WarehouseComputer
         public int Dock;
         public Object WeightMonitor;
         public Object WaitingObj;
-        //public EventWaitHandle Ewh;
         public bool ReadyToLeave;
+        public int NRobotsAboutToLoad;
 
         public Truck(int id, int max, int curr)
         {
@@ -25,8 +25,8 @@ namespace WarehouseComputer
             CurrWeight = curr;
             WeightMonitor = new object();
             WaitingObj = new object();
-            //Ewh = new EventWaitHandle(false, EventResetMode.ManualReset);
             ReadyToLeave = false;
+            NRobotsAboutToLoad = 0;
         }
 
         public void WaitForDelivery()

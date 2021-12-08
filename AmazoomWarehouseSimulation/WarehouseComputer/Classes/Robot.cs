@@ -24,7 +24,6 @@ namespace WarehouseComputer.Classes
         private Location truckLocation;
         private Truck truck;
         private bool alreadyTriedTruck;
-        //public Mutex robotmutex;
 
         public Robot(int id, double maxWeight, double currWeight)
         {
@@ -35,7 +34,6 @@ namespace WarehouseComputer.Classes
             this.currCell = null;
             this.currOrder = null;
             this.route = new List<Tuple<int, int>>();
-            //this.robotmutex = mutex;
             alreadyTriedTruck = false;
         }
 
@@ -80,7 +78,6 @@ namespace WarehouseComputer.Classes
                 else
                 {
                     truck = Program.Docks[Program.NextTruck];
-                    //Console.WriteLine($"Next truck picked is {Program.NextTruck}.");
                     Program.NextTruck = (Program.NextTruck + 1) % 2;
                 }
                 
@@ -93,6 +90,10 @@ namespace WarehouseComputer.Classes
             if (truck.ReservedWeight + this.currOrder.OrderWeight > truck.MaxWeight || truck.ReadyToLeave)
             {
                 truck.ReadyToLeave = true;
+                if(truck.NRobotsAboutToLoad == 0)
+                {
+                    TellTruckToLeave(truck);
+                }
                 Monitor.Exit(truck.WeightMonitor);
 
                 //if there is another truck at the dock, the robot will try with this one, otherwise it will wait.
@@ -138,9 +139,9 @@ namespace WarehouseComputer.Classes
                     this.truckLocation = new Location(2, Program.map.NRow - 1, 0, 0);
                 }
                 truck.ReservedWeight += currOrder.OrderWeight;
+                truck.NRobotsAboutToLoad++;
                 Console.WriteLine($"Truck {truck.Id} has {truck.ReservedWeight}kg reserved.");
                 Monitor.Exit(truck.WeightMonitor);
-
             }
             this.truck = truck;
             alreadyTriedTruck = false;
@@ -214,9 +215,13 @@ namespace WarehouseComputer.Classes
                 {
                     truck.CurrWeight += currOrder.OrderWeight;
                     Console.WriteLine($"Robot {id} loaded truck {truck.Id} with {product.ProductName}, it now contains {truck.CurrWeight}kg out of {truck.MaxWeight}.");
-                    if(truck.CurrWeight == truck.ReservedWeight && truck.ReadyToLeave)
+                    if(truck.CurrWeight == truck.ReservedWeight && truck.ReadyToLeave || truck.CurrWeight == truck.MaxWeight)
                     {
-                        TellTruckToLeave();
+                        TellTruckToLeave(this.truck);
+                    }
+                    else
+                    {
+                        this.truck.NRobotsAboutToLoad--;
                     }
                 }
                 
@@ -224,7 +229,7 @@ namespace WarehouseComputer.Classes
             this.truck = null;
         }
 
-        private void TellTruckToLeave()
+        private void TellTruckToLeave(Truck truckToLeave)
         {
             /**
              * Whole critical section synchronized on Docks, because we don't want to have inconsistent Docks-WaitingTrucks results
@@ -235,16 +240,17 @@ namespace WarehouseComputer.Classes
              */
             lock (Program.Docks)
             {
-                Program.Docks.Remove(truck);
-                lock (truck.WaitingObj)
+                Program.Docks.Remove(truckToLeave);
+                lock (truckToLeave.WaitingObj)
                 {
-                    Monitor.Pulse(truck.WaitingObj);
+                    Monitor.Pulse(truckToLeave.WaitingObj);
                 }
                 if (Program.WaitingTrucks.Count > 0)
                 {
                     Truck newTruck = Program.WaitingTrucks.Dequeue();
                     newTruck.Dock = Program.Docks.Count;
                     Program.Docks.Add(newTruck);
+                    Monitor.PulseAll(Program.Docks);
                     Console.WriteLine($"Truck {newTruck.Id} is waiting at dock {Program.Docks.Count - 1}.");
                 }
             }
