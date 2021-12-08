@@ -30,14 +30,17 @@ namespace WarehouseComputer
 
         static void Main(string[] args)
         {
-            map = WarehouseComputerStartup.InitWarehouseMap();
-            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map);
+            map = WarehouseComputerStartup.InitWarehouseMap(true);
+            CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
             AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe(CurrentDatabaseName);
 
             int RobotNum = 3;
             int truckNum = 3;
             Robot[] r = new Robot[RobotNum];
             Thread[] t = new Thread[RobotNum];
+
+            Thread Admin = new Thread(() => AdministratorInput.ReadInput());
+            Admin.Start();
 
             for (int i = 0; i < RobotNum; i++)
             {
@@ -58,11 +61,12 @@ namespace WarehouseComputer
                 truckThreads[i].Start();
             }
 
-            Console.ReadKey();
+            while(Console.ReadKey().Key != ConsoleKey.Spacebar) { };
+            
             JSONFile.ClearJSONFile();
             Console.WriteLine("[WH COMPUTER] Killing Web Server");
             AmazoomWebServerProcess.Kill();
-            
+           
         }
 
         public static void AddOrder(Order order)

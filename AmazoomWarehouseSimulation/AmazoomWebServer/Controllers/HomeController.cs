@@ -34,7 +34,8 @@ namespace AmazoomWebServer.Controllers
         public IActionResult Orderspage()
         {
             /* Update uncompleted orders from Global queue */
-            ProductInventory.uncompletedOrders = Globals.OrderQueue;            
+            //ProductInventory.uncompletedOrders = Globals.OrderQueue;
+            ProductInventory.availableProducts = JSONFile.GetProducts(Globals.DatabaseName);
 
             return View(tempInventory);
         }

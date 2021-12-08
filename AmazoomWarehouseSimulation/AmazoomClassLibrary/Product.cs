@@ -28,6 +28,7 @@ namespace AmazoomClassLibrary
             this.ProductName = name;
             this.NumOfProduct = num;
             this.Weight = weight;
+            this.Location = new Location();
         }
 
         public Product(string name, int num, Location loc, double weight)
