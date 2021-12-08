@@ -35,35 +35,24 @@ namespace WarehouseComputer
             CurrentDatabaseName = WarehouseComputerStartup.InitProductInventory(map, true);
             AmazoomWebServerProcess = WarehouseComputerStartup.InitWebServerProcessAndPipe();
 
-            Robot[] r = new Robot[5];
-            Thread[] t = new Thread[5];
-            Mutex robotmutex = new Mutex();
+            int RobotNum = 5;
+            int truckNum = 3;
+            Robot[] r = new Robot[RobotNum];
+            Thread[] t = new Thread[RobotNum];
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < RobotNum; i++)
             {
                 int threadnum = i;
-                r[threadnum] = new Robot(threadnum, 10, 0, robotmutex);
+                r[threadnum] = new Robot(threadnum, 10, 0);
                 t[threadnum] = new Thread(() => r[threadnum].Execute());
                 t[threadnum].Start(); //should we join threads ?
-            }
-            while (true)
-            {
-                Console.WriteLine(Program.OrdersFromWebServer.Count());
-                Console.ReadKey();
             }
             
             //Order testorder = new Order(1);
             //Product p = new Product("Apple", 10, new Location(8, 4, 0, 1), 1.5);
             //testorder.AddProduct(p);
 
-            ////testorder.AddProduct(map.Inventory[0]);
-            ////testorder.AddProduct(map.Inventory[1]);
-            ////robotmutex.WaitOne();
-            ///*OrdersFromWebServer.Enqueue(testorder);
-            //OrdersFromWebServer.Enqueue(testorder);
-            //OrdersFromWebServer.Enqueue(testorder);
-            //OrdersFromWebServer.Enqueue(testorder);
-            //OrdersFromWebServer.Enqueue(testorder);*/
+            
             //Thread.Sleep(1000);
             //for (int i = 0; i < 20; i++)
             //{
@@ -71,28 +60,21 @@ namespace WarehouseComputer
             //}
             //Thread.Sleep(1000);
 
-            //List<Truck> trucks = new List<Truck>();
-            //List<Thread> truckThreads = new List<Thread>();
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    Thread.Sleep(5000);
-            //    trucks.Add(new Truck(i, 5, 0));
-            //    int threadnum = i;
-            //    truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
-            //    truckThreads[i].Start();
-            //}
-            ////robotmutex.ReleaseMutex();
-            //Console.ReadKey();
+            List<Truck> trucks = new List<Truck>();
+            List<Thread> truckThreads = new List<Thread>();
+            for (int i = 0; i < truckNum; i++)
+            {
+                Thread.Sleep(5000);
+                trucks.Add(new Truck(i, 5, 0));
+                int threadnum = i;
+                truckThreads.Add(new Thread(() => trucks[threadnum].WaitForDelivery()));
+                truckThreads[i].Start();
+            }
 
-            //Console.ReadKey();
-            //foreach(Order order in OrdersFromWebServer)
-            //{
-            //    Console.WriteLine("[WH COMPUTER] orderID:{0}, Product:{1}, Num:{2}", order.OrderID, order.Products[0].ProductName, order.Products[0].NumOfProduct);
-            //}
-
+            
         }
 
-        private static void AddOrder(Order order)
+        public static void AddOrder(Order order)
         {
             lock (WaitingOrders)
             {
@@ -118,30 +100,6 @@ namespace WarehouseComputer
                     Console.WriteLine($"Truck {truck.Id} is queuing up...");
                 }
             }
-        }
-
-        //public static void AddToQueue(Order OrderedProduct)
-        //{
-        //    mutex.WaitOne();
-        //    OrdersFromWebServer.Enqueue(OrderedProduct);
-        //    mutex.ReleaseMutex();
-        //}
-
-        //public static Order TakeFromQueue()
-        //{
-        //    mutex.WaitOne();
-        //    Order ReturnOrder = OrdersFromWebServer.Dequeue();
-        //    mutex.ReleaseMutex();
-        //    return ReturnOrder;
-        //}
-
-        //public static int ReturnQueueCount()
-        //{
-        //    mutex.WaitOne();
-        //    int count = OrdersFromWebServer.Count;
-        //    mutex.ReleaseMutex();
-        //    return count;
-        //}
+        }   
     }
-
 }

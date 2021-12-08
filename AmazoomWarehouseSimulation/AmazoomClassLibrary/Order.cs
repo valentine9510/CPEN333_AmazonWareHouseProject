@@ -35,6 +35,7 @@ namespace AmazoomClassLibrary
         {
             OrderID = inputOrderID;
             Products = new List<Product>();
+            OrderWeight = 0;
             // maybe have to initialise Status enum
         }
 
@@ -52,7 +53,7 @@ namespace AmazoomClassLibrary
 
             /* If item is not found */
             this.Products.Add(inputProduct);
-            OrderWeight += inputProduct.Weight;
+            OrderWeight += inputProduct.Weight*inputProduct.NumOfProduct;
         }
 
         public void RemoveProduct(string name)

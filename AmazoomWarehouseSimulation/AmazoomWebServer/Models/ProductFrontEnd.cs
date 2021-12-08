@@ -40,7 +40,7 @@ namespace AmazoomWebServer.Models
         public ProductInventory()
         {
             //availableProducts = new List<Product>();
-            availableProducts = JSONFile.GetProducts("C:\\Users\\hp\\Source\\Repos\\CPEN333_AmazonWareHouseProject\\AmazoomWarehouseSimulation\\FruitDatabase.json");
+            availableProducts = JSONFile.GetProducts("FruitDatabase.json");
             uncompletedOrders = new Queue<Order>();
             completedOrders = new Queue<Order>();
             currentOrder = new Order(1);

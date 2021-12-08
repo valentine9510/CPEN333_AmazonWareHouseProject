@@ -42,7 +42,7 @@ namespace WarehouseComputer.Classes
             foreach (var product in Inventory)
             {
                 location = FindFreeLocation();
-                Console.WriteLine($"Product {product.ProductName} is placed @ {location}.");
+                //Console.WriteLine($"Product {product.ProductName} is placed @ {location}.");
                 product.Location = location;
             }
 

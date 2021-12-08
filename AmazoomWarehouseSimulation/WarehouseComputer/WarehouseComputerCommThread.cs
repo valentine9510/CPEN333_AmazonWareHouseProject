@@ -18,7 +18,7 @@ namespace WarehouseComputer
                 Console.WriteLine("[WH COMPUTER] SYNCED");
                 Order RecievedOrder = new Order();
                 RecievedOrder = StreamReader.Deserialize(Pipe) as Order;
-                OrderQueue.Enqueue(RecievedOrder);
+                Program.AddOrder(RecievedOrder);
                 //Console.WriteLine("[WH COMPUTER] OrderId:{0}, Product:{1}, Num:{2}", RecievedOrder.OrderID, RecievedOrder.Products[0].ProductName, RecievedOrder.Products[0].NumOfProduct);
             }
         }

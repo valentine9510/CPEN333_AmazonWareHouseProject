@@ -64,14 +64,18 @@ namespace AmazoomWebServer.Controllers
             else
             {
                 /*Reduce on the number of products in inventory*/
-                foreach(var item in ProductInventory.availableProducts)
+                Location productlocation = null; 
+                double productweight = 0;
+                foreach (var item in ProductInventory.availableProducts)
                 {
                     if (item.ProductName == currentItemName)
                     {
                         item.NumOfProduct-= qty;
+                        productlocation = item.Location;
+                        productweight = item.Weight;
                     }
                 }
-                ProductInventory.currentOrder.AddProduct(new Product(currentItemName, qty)); //Add to current order
+                ProductInventory.currentOrder.AddProduct(new Product(currentItemName, qty, productlocation, productweight)); //Add to current order
             }
             return View("Orderspage",tempInventory);
         }

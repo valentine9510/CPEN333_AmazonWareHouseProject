@@ -19,7 +19,7 @@ namespace AmazoomClassLibrary
         {
             string startupPath = Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
             string json = JsonConvert.SerializeObject(inputproduct);
-            Console.WriteLine(json);
+            //Console.WriteLine(json);
             File.WriteAllText(Path.Combine(startupPath, filename), json);
         }
     }

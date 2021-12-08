@@ -26,7 +26,7 @@ namespace WarehouseComputer.Classes
         private bool alreadyTriedTruck;
         //public Mutex robotmutex;
 
-        public Robot(int id, double maxWeight, double currWeight, Mutex mutex)
+        public Robot(int id, double maxWeight, double currWeight)
         {
             this.id = id;
             this.maxWeight = maxWeight;
@@ -55,6 +55,7 @@ namespace WarehouseComputer.Classes
                 foreach (Product p in currOrder.Products)
                 {
                     productlocations.Add(p.Location);
+                    Console.WriteLine(p.Location);
                 }
                 this.route = FindRoute(productlocations);
                 ExecRoute();
